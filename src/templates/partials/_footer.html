@@ -1,0 +1,14 @@
+{% load static %}
+<footer class="footer mt-auto py-3 bg-light">
+    <div class="container text-center">
+        <span class="text-muted">&copy; 2026 MemeMaker</span>
+    </div>
+</footer>
+
+<!-- Bootstrap Dependencies -->
+<script src="{% static 'assets/bootstrap/js/jquery-3.2.1.slim.min.js' %}"></script>
+<script src="{% static 'assets/bootstrap/js/popper.min.js' %}"></script>
+<script src="{% static 'assets/bootstrap/js/bootstrap.min.js' %}"></script>
+<!-- Custom JS -->
+<script src="{% static 'assets/custom/js/scripts.js' %}"></script>
+{% block extra_js %}{% endblock %}
