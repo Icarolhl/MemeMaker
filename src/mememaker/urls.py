@@ -14,13 +14,14 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path
 from django.views.generic import TemplateView
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', TemplateView.as_view(template_name='base.html'), name='home'),
+    path("admin/", admin.site.urls),
+    path("", TemplateView.as_view(template_name="base.html"), name="home"),
     # TODO: Remover esta rota antes do deploy ou quando o 404 estiver validado
-    path('test-404/', TemplateView.as_view(template_name='404.html'), name='test_404'),
+    path("test-404/", TemplateView.as_view(template_name="404.html"), name="test_404"),
 ]
