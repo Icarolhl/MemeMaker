@@ -21,4 +21,6 @@ from django.views.generic import TemplateView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', TemplateView.as_view(template_name='base.html'), name='home'),
+    # TODO: Remover esta rota antes do deploy ou quando o 404 estiver validado
+    path('test-404/', TemplateView.as_view(template_name='404.html'), name='test_404'),
 ]

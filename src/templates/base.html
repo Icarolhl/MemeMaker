@@ -2,7 +2,10 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 
-{% include 'partials/_head.html' %}
+<head>
+    <title>{% block title %}MemeMaker{% endblock %}</title>
+    {% include 'partials/_head.html' %}
+</head>
 
 <body class="d-flex flex-column h-100">
     {% include 'partials/_navbar.html' %}
