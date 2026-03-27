@@ -105,6 +105,7 @@ executionEnvironments = [{ root = "src" }]
 # ============================
 [tool.pytest.ini_options]
 addopts = "-s --color=yes --tb=short"
+DJANGO_SETTINGS_MODULE = "mememaker.settings"
 # Adiciona 'src' ao path do Python durante os testes. Isso permite que
 # os testes em `tests/` importem os módulos de `src/` sem erros.
 pythonpath = ["src"]
@@ -121,6 +122,7 @@ build-backend = "setuptools.build_meta"
 [dependency-groups]
 dev = [
     "django-stubs>=6.0.1",
+    "pytest-django>=4.12.0",
 ]
 
 [tool.setuptools.packages.find]
