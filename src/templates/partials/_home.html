@@ -1,37 +1,47 @@
-<div class="jumbotron jumbotron-fluid bg-transparent text-center">
-    <div class="container">
-        <h1 class="display-4 font-weight-bold">Bem-vindo ao MemeMaker</h1>
-        <p class="lead">Crie e compartilhe seus memes de forma rápida e fácil.</p>
-        <hr class="my-4">
-        <div class="row mt-5">
-            <div class="col-md-4">
-                <div class="card mb-4 shadow-sm">
-                    <div class="card-body text-center">
-                        <i class="fas fa-upload fa-3x mb-3 text-primary"></i>
-                        <h5>Faça Upload</h5>
-                        <p class="card-text text-muted">Suba sua própria imagem para começar a editar.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card mb-4 shadow-sm">
-                    <div class="card-body text-center">
-                        <i class="fas fa-edit fa-3x mb-3 text-success"></i>
-                        <h5>Adicione Texto</h5>
-                        <p class="card-text text-muted">Coloque legendas personalizadas no topo e rodapé.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card mb-4 shadow-sm">
-                    <div class="card-body text-center">
-                        <i class="fas fa-share-alt fa-3x mb-3 text-info"></i>
-                        <h5>Compartilhe</h5>
-                        <p class="card-text text-muted">Baixe seu meme ou compartilhe com seus amigos.</p>
+<div class="meme-editor-container py-4">
+    <div class="row">
+        <!-- Área de Visualização (Preview) -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 bg-dark text-white text-center d-flex align-items-center justify-content-center" style="min-height: 500px;">
+                <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                    <div id="meme-preview-area" class="w-100">
+                        <!-- Placeholder da Imagem -->
+                        <div class="border border-secondary rounded p-5 d-inline-block bg-secondary-subtle">
+                            <i class="fas fa-image fa-5x mb-3 opacity-25"></i>
+                            <p class="mb-0">A visualização do seu meme aparecerá aqui</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <a class="btn btn-primary btn-lg mt-4" href="#" role="button">Começar a Criar</a>
+
+        <!-- Ferramentas de Edição -->
+        <div class="col-lg-4 mt-4 mt-lg-0">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white border-bottom-0 pt-4">
+                    <h5 class="mb-0 font-weight-bold text-primary">Ferramentas</h5>
+                </div>
+                <div class="card-body">
+                    <div id="editor-tools">
+                        <p class="text-muted small mb-4">Personalize seu meme abaixo.</p>
+                        
+                        <!-- Placeholder para inputs futuros -->
+                        <div class="form-group mb-3">
+                            <label class="font-weight-bold">Texto Superior</label>
+                            <input type="text" class="form-control" placeholder="Digite o texto do topo">
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label class="font-weight-bold">Texto Inferior</label>
+                            <input type="text" class="form-control" placeholder="Digite o texto de baixo">
+                        </div>
+
+                        <button class="btn btn-primary btn-block mt-4">
+                            <i class="fas fa-download mr-2"></i>Gerar Meme
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
