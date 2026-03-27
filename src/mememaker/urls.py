@@ -17,11 +17,11 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path
+from mememaker.views import HomeView
 from django.views.generic import TemplateView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", TemplateView.as_view(template_name="base.html"), name="home"),
-    # TODO: Remover esta rota antes do deploy ou quando o 404 estiver validado
+    path("", HomeView.as_view(), name="home"),
     path("test-404/", TemplateView.as_view(template_name="404.html"), name="test_404"),
 ]

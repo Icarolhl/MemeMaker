@@ -47,16 +47,23 @@
                                 <small class="form-text text-muted">Formatos aceitos: JPG, PNG, WEBP.</small>
                             </div>
 
-                            <!-- Passo 2: Textos -->
+                            <!-- Passo 2: Edição -->
                             <div class="form-group mb-3">
-                                <label class="font-weight-bold">2. Adicione os Textos</label>
-                                <input type="text" name="top_text" class="form-control mb-2" id="topTextInput" placeholder="Texto do topo">
-                                <input type="text" name="bottom_text" class="form-control" id="bottomTextInput" placeholder="Texto de baixo">
+                                <label class="font-weight-bold">2. Ferramentas de Edição</label>
+                                <div id="canvas-controls" class="d-flex flex-wrap gap-2">
+                                    <button type="button" class="btn btn-outline-primary btn-sm mb-2 mr-2" id="addTextBtn">
+                                        <i class="fas fa-font mr-1"></i> Adicionar Texto
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger btn-sm mb-2" id="clearCanvasBtn">
+                                        <i class="fas fa-trash-alt mr-1"></i> Limpar Tudo
+                                    </button>
+                                </div>
+                                <p class="text-muted small mt-2">Você poderá arrastar, redimensionar e editar os textos diretamente na imagem.</p>
                             </div>
 
                             <!-- Botão de Ação -->
-                            <button type="submit" class="btn btn-primary btn-block mt-4 py-2 font-weight-bold">
-                                <i class="fas fa-download mr-2"></i>Gerar e Baixar Meme
+                            <button type="button" class="btn btn-success btn-block mt-4 py-2 font-weight-bold" id="downloadMemeBtn">
+                                <i class="fas fa-download mr-2"></i>Baixar Meme Pronto
                             </button>
                         </div>
                     </div>
