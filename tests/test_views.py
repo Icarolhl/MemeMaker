@@ -3,6 +3,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client
 from django.urls import reverse
 
+
 @pytest.mark.django_db
 class TestHomeView:
     """
@@ -28,7 +29,10 @@ class TestHomeView:
         url = reverse("home")
         response = client.post(url)
         assert response.status_code == 400
-        assert response.json() == {"status": "error", "message": "Nenhuma imagem enviada."}
+        assert response.json() == {
+            "status": "error",
+            "message": "Nenhuma imagem enviada.",
+        }
 
     def test_post_invalid_extension(self, client: Client) -> None:
         """

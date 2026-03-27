@@ -4,6 +4,9 @@
     <p class="lead text-muted small">Criador de meme rápido e fácil.</p>
 </div>
 
+<!-- Container de Alertas -->
+<div id="alert-container"></div>
+
 <!-- Box Principal da Aplicação -->
 <div class="meme-editor-app-box py-4 px-4 bg-white border rounded shadow-sm">
     <form method="POST" enctype="multipart/form-data" id="memeForm">
@@ -41,7 +44,7 @@
                             <div class="form-group mb-4">
                                 <label class="font-weight-bold d-block">1. Escolha a Imagem</label>
                                 <div class="custom-file">
-                                    <input type="file" name="image" class="custom-file-input" id="imageUpload" accept="image/*" required>
+                                    <input type="file" name="image" class="custom-file-input" id="imageUpload" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" required>
                                     <label class="custom-file-label" for="imageUpload">Selecionar imagem...</label>
                                 </div>
                                 <small class="form-text text-muted">Formatos aceitos: JPG, PNG, WEBP.</small>
