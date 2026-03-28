@@ -44,8 +44,6 @@ class HomeView(View):
                 status=400,
             )
 
-        # Como não salvaremos no banco, apenas confirmamos a validação
-        # O processamento real agora seguirá para o Canvas no Frontend
         return JsonResponse(
             {
                 "status": "success",
