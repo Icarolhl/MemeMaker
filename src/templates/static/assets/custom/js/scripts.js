@@ -1,13 +1,73 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Elementos da Interface
     const imageUpload = document.getElementById('imageUpload');
-    const memePreviewArea = document.getElementById('meme-preview-area');
-    const memePreviewContainer = document.getElementById('meme-preview-container');
+    const memeCanvasElement = document.getElementById('meme-canvas');
+    const canvasWrapper = document.getElementById('canvas-wrapper');
+    const placeholderContent = document.getElementById('placeholder-content');
     const customFileLabel = document.querySelector('.custom-file-label');
     const alertContainer = document.getElementById('alert-container');
+    
+    // Botões de Ação
+    const addTextBtn = document.getElementById('addTextBtn');
+    const clearCanvasBtn = document.getElementById('clearCanvasBtn');
+    const downloadMemeBtn = document.getElementById('downloadMemeBtn');
+
+    let canvas = null;
 
     /**
-     * Exibe um alerta na tela para o usuário.
+     * Inicializa o Fabric Canvas se ainda não existir
      */
+    function initCanvas() {
+        // SEMPRE garantir que o placeholder suma e o wrapper apareça ao tentar inicializar
+        if (placeholderContent) {
+            placeholderContent.classList.add('d-none');
+            placeholderContent.style.setProperty('display', 'none', 'important');
+        }
+        if (canvasWrapper) {
+            canvasWrapper.style.display = 'block';
+        }
+
+        if (!canvas && memeCanvasElement) {
+            canvas = new fabric.Canvas('meme-canvas', {
+                preserveObjectStacking: true,
+                backgroundColor: 'transparent',
+                selection: true
+            });
+            
+            console.log('Fabric Canvas Inicializado');
+        }
+    }
+
+    /**
+     * Ajusta o tamanho do canvas para caber no container mantendo a proporção da imagem
+     */
+    function resizeCanvasToImage() {
+        if (!canvas || !canvas.backgroundImage) return;
+        
+        const container = document.getElementById('meme-preview-container');
+        const maxWidth = container.clientWidth - 20; // Margem de segurança
+        const maxHeight = 600;
+        
+        const img = canvas.backgroundImage;
+        let scale = 1;
+        
+        if (img.width > maxWidth) {
+            scale = maxWidth / img.width;
+        }
+        
+        if (img.height * scale > maxHeight) {
+            scale = maxHeight / img.height;
+        }
+        
+        canvas.setDimensions({
+            width: img.width * scale,
+            height: img.height * scale
+        });
+        
+        canvas.setZoom(scale);
+        canvas.renderAll();
+    }
+
     function showAlert(message, type = 'warning') {
         if (alertContainer) {
             alertContainer.innerHTML = `
@@ -23,69 +83,103 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    /**
-     * Limpa alertas existentes.
-     */
-    function clearAlerts() {
-        if (alertContainer) {
-            alertContainer.innerHTML = '';
-        }
-    }
-
-    if (imageUpload && memePreviewArea) {
+    if (imageUpload) {
         imageUpload.addEventListener('change', function(event) {
             const file = this.files[0];
             if (file) {
-                console.log('Arquivo selecionado:', file.name, 'Tipo:', file.type);
-                clearAlerts();
-
-                // Validação RIGOROSA no Frontend
                 const validMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-                const fileName = file.name.toLowerCase();
-                const hasValidExtension = fileName.endsWith('.jpg') || 
-                                         fileName.endsWith('.jpeg') || 
-                                         fileName.endsWith('.png') || 
-                                         fileName.endsWith('.webp');
-
-                if (!validMimeTypes.includes(file.type) || !hasValidExtension) {
-                    console.error('Bloqueado: Arquivo não é uma imagem suportada.');
-                    showAlert('<strong>Arquivo não suportado!</strong> Use apenas imagens JPG, PNG ou WEBP. Arquivos PDF ou outros formatos não são permitidos.', 'danger');
-                    
-                    // Reset total do input
-                    this.value = ''; 
-                    if (customFileLabel) customFileLabel.textContent = 'Selecionar imagem...';
+                if (!validMimeTypes.includes(file.type)) {
+                    showAlert('Arquivo não suportado!', 'danger');
                     return;
                 }
 
-                // Atualiza label
                 if (customFileLabel) {
                     customFileLabel.textContent = file.name;
                 }
 
                 const reader = new FileReader();
-                
-                reader.onerror = () => showAlert('Erro ao ler arquivo.', 'danger');
-
                 reader.onload = function(e) {
-                    // Limpa e insere preview
-                    while (memePreviewArea.firstChild) {
-                        memePreviewArea.removeChild(memePreviewArea.firstChild);
-                    }
+                    initCanvas();
                     
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.id = 'preview-image';
-                    img.className = 'shadow-lg img-fluid';
-                    img.style.display = 'block';
-                    img.style.margin = '0 auto';
-                    img.style.maxWidth = '100%';
-                    img.style.height = 'auto';
-                    
-                    memePreviewArea.appendChild(img);
+                    fabric.Image.fromURL(e.target.result, (img) => {
+                        // Limpa objetos anteriores com segurança
+                        const objects = canvas.getObjects();
+                        canvas.remove(...objects);
+                        
+                        // Define imagem de fundo
+                        canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
+                            originX: 'left',
+                            originY: 'top'
+                        });
+                        
+                        setTimeout(() => resizeCanvasToImage(), 50);
+                    });
                 };
-                
                 reader.readAsDataURL(file);
             }
+        });
+    }
+
+    if (addTextBtn) {
+        addTextBtn.addEventListener('click', () => {
+            if (!canvas || !canvas.backgroundImage) {
+                showAlert('Selecione uma imagem primeiro!');
+                return;
+            }
+
+            const text = new fabric.IText('CLIQUE PARA EDITAR', {
+                left: canvas.width / 2,
+                top: canvas.height / 2,
+                fontFamily: 'Impact',
+                fontSize: 40,
+                fill: '#ffffff',
+                stroke: '#000000',
+                strokeWidth: 2,
+                textAlign: 'center',
+                originX: 'center',
+                originY: 'center',
+                selectable: true,
+                hasControls: true,
+                hasBorders: true
+            });
+
+            canvas.add(text);
+            canvas.setActiveObject(text);
+            canvas.renderAll();
+        });
+    }
+
+    if (clearCanvasBtn) {
+        clearCanvasBtn.addEventListener('click', () => {
+            if (canvas) {
+                // REMOÇÃO ATÔMICA - Evita congelamento
+                const objects = canvas.getObjects();
+                canvas.remove(...objects);
+                canvas.renderAll();
+            }
+        });
+    }
+
+    if (downloadMemeBtn) {
+        downloadMemeBtn.addEventListener('click', () => {
+            if (!canvas || !canvas.backgroundImage) {
+                showAlert('Não há nada para baixar!');
+                return;
+            }
+
+            canvas.discardActiveObject();
+            canvas.renderAll();
+
+            const dataURL = canvas.toDataURL({
+                format: 'png',
+                quality: 1,
+                multiplier: 1 / canvas.getZoom() // Baixa na resolução original
+            });
+
+            const link = document.createElement('a');
+            link.download = `meme-${Date.now()}.png`;
+            link.href = dataURL;
+            link.click();
         });
     }
 });
