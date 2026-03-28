@@ -67,11 +67,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 reader.onerror = () => showAlert('Erro ao ler arquivo.', 'danger');
 
                 reader.onload = function(e) {
-                    if (memePreviewContainer) {
-                        memePreviewContainer.classList.remove('bg-dark', 'text-white');
-                        memePreviewContainer.classList.add('bg-light');
-                    }
-
                     // Limpa e insere preview
                     while (memePreviewArea.firstChild) {
                         memePreviewArea.removeChild(memePreviewArea.firstChild);
@@ -83,6 +78,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     img.className = 'shadow-lg img-fluid';
                     img.style.display = 'block';
                     img.style.margin = '0 auto';
+                    img.style.maxWidth = '100%';
+                    img.style.height = 'auto';
                     
                     memePreviewArea.appendChild(img);
                 };
