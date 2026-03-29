@@ -148,3 +148,61 @@ def test_handle_canvas_clear_stability(
     # Se o botão de download ainda responder, a página não congelou
     download_btn = page.locator("#downloadMemeBtn")
     expect(download_btn).to_be_enabled()
+
+
+@pytest.mark.django_db
+def test_text_box_controls_lifecycle(
+    live_server: "LiveServer", page: Page, tmp_path: Path
+) -> None:
+    """
+    Testa o ciclo de vida dos controles de texto na barra lateral:
+    adição, sincronização e remoção individual.
+    """
+    img_path = tmp_path / "test_lifecycle.png"
+    handle_create_dummy_image(img_path)
+
+    page.goto(f"{live_server.url}{reverse('home')}")
+    page.set_input_files("#imageUpload", str(img_path))
+
+    # 1. Adição: Verifica se o controle aparece na sidebar
+    page.click("#addTextBtn")
+    text_section = page.locator("#text-controls-section")
+    expect(text_section).to_be_visible()
+
+    textareas = page.locator("#text-boxes-container textarea")
+    expect(textareas).to_have_count(1)
+    expect(textareas.first).to_have_value("CLIQUE PARA EDITAR")
+
+    # 2. Sincronização Sidebar -> Canvas
+    # Nota: Testamos apenas se o valor no input muda e não há erros de JS.
+    page.fill("#text-boxes-container textarea", "TEXTO EDITADO")
+    expect(textareas.first).to_have_value("TEXTO EDITADO")
+
+    # 3. Adição de múltiplos textos
+    page.click("#addTextBtn")
+    expect(textareas).to_have_count(2)
+
+    # 4. Remoção individual
+    remove_buttons = page.locator(".remove-text-btn")
+    expect(remove_buttons).to_have_count(2)
+    remove_buttons.first.click()
+    expect(textareas).to_have_count(1)
+
+    # 5. Limpeza via botão 'Limpar Tudo'
+    page.click("#clearCanvasBtn")
+    expect(text_section).to_be_hidden()
+    expect(textareas).to_have_count(0)
+
+    # 6. Limpeza via novo Upload
+    page.click("#addTextBtn")
+    expect(text_section).to_be_visible()
+
+    # Usa um nome de arquivo diferente para garantir que o evento 'change' dispare
+    img_path_2 = tmp_path / "test_lifecycle_2.png"
+    handle_create_dummy_image(img_path_2)
+
+    page.set_input_files("#imageUpload", str(img_path_2))
+
+    # Aguarda o processamento do upload (FileReader + Fabric.js)
+    expect(text_section).to_be_hidden()
+    expect(textareas).to_have_count(0)

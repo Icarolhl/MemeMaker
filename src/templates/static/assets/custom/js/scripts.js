@@ -6,6 +6,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const placeholderContent = document.getElementById("placeholder-content");
   const customFileLabel = document.querySelector(".custom-file-label");
   const alertContainer = document.getElementById("alert-container");
+  const textControlsSection = document.getElementById("text-controls-section");
+  const textBoxesContainer = document.getElementById("text-boxes-container");
 
   // Botões de Ação
   const addTextBtn = document.getElementById("addTextBtn");
@@ -34,6 +36,70 @@ document.addEventListener("DOMContentLoaded", () => {
         enableRetinaScaling: true, // Ativa suporte a telas high-DPI
         imageSmoothingEnabled: true,
       });
+
+      // Evento para atualizar textarea quando o texto é editado no canvas
+      canvas.on("text:changed", (e) => {
+        const obj = e.target;
+        if (obj && obj.id) {
+          const textarea = document.querySelector(`textarea[data-id="${obj.id}"]`);
+          if (textarea) {
+            textarea.value = obj.text;
+          }
+        }
+      });
+    }
+  }
+
+  /**
+   * Adiciona controles de interface para uma caixa de texto
+   */
+  function addTextBoxControl(textObject) {
+    const id = "text-box-" + Date.now() + Math.floor(Math.random() * 1000);
+    textObject.id = id;
+
+    if (textControlsSection) {
+      textControlsSection.style.display = "block";
+    }
+
+    const controlWrapper = document.createElement("div");
+    controlWrapper.className = "text-control-item mb-3 p-3 border rounded bg-light";
+    controlWrapper.setAttribute("data-id", id);
+    controlWrapper.innerHTML = `
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <span class="badge badge-primary">Texto</span>
+        <button type="button" class="btn btn-sm btn-link text-danger p-0 remove-text-btn" title="Remover Texto">
+          <i class="fas fa-times-circle"></i>
+        </button>
+      </div>
+      <textarea class="form-control form-control-sm text-sync-input" data-id="${id}" rows="2" style="resize: none;">${textObject.text}</textarea>
+    `;
+
+    textBoxesContainer.appendChild(controlWrapper);
+
+    const textarea = controlWrapper.querySelector(".text-sync-input");
+    const removeBtn = controlWrapper.querySelector(".remove-text-btn");
+
+    // Sincroniza textarea -> canvas
+    textarea.addEventListener("input", (e) => {
+      textObject.set("text", e.target.value);
+      canvas.renderAll();
+    });
+
+    // Remove texto
+    removeBtn.addEventListener("click", () => {
+      canvas.remove(textObject);
+      controlWrapper.remove();
+      updateTextControlsVisibility();
+    });
+  }
+
+  /**
+   * Atualiza a visibilidade da seção de controles de texto
+   */
+  function updateTextControlsVisibility() {
+    const textObjects = canvas.getObjects("i-text");
+    if (textObjects.length === 0 && textControlsSection) {
+      textControlsSection.style.display = "none";
     }
   }
 
@@ -125,6 +191,14 @@ document.addEventListener("DOMContentLoaded", () => {
             const objects = canvas.getObjects();
             canvas.remove(...objects);
 
+            // Limpa controles de texto ao carregar nova imagem
+            if (textBoxesContainer) {
+              textBoxesContainer.innerHTML = "";
+            }
+            if (textControlsSection) {
+              textControlsSection.style.display = "none";
+            }
+
             canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
               originX: "left",
               originY: "top",
@@ -166,6 +240,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       canvas.add(text);
+      addTextBoxControl(text);
       canvas.setActiveObject(text);
       canvas.renderAll();
     });
@@ -176,6 +251,15 @@ document.addEventListener("DOMContentLoaded", () => {
       if (canvas) {
         const objects = canvas.getObjects();
         canvas.remove(...objects);
+        
+        // Limpa controles de texto
+        if (textBoxesContainer) {
+          textBoxesContainer.innerHTML = "";
+        }
+        if (textControlsSection) {
+          textControlsSection.style.display = "none";
+        }
+        
         canvas.renderAll();
       }
     });
