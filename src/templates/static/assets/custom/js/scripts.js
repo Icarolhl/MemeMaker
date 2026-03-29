@@ -15,10 +15,9 @@ document.addEventListener("DOMContentLoaded", () => {
   let canvas = null;
 
   /**
-   * Inicializa o Fabric Canvas se ainda não existir
+   * Inicializa o Fabric Canvas
    */
   function initCanvas() {
-    // SEMPRE garantir que o placeholder suma e o wrapper apareça ao tentar inicializar
     if (placeholderContent) {
       placeholderContent.classList.add("d-none");
       placeholderContent.style.setProperty("display", "none", "important");
@@ -32,20 +31,21 @@ document.addEventListener("DOMContentLoaded", () => {
         preserveObjectStacking: true,
         backgroundColor: "transparent",
         selection: true,
+        enableRetinaScaling: true, // Ativa suporte a telas high-DPI
+        imageSmoothingEnabled: true,
       });
-
-      console.log("Fabric Canvas Inicializado");
     }
   }
 
   /**
-   * Ajusta o tamanho do canvas para caber no container mantendo a proporção da imagem
+   * Ajusta o tamanho do canvas e escala a imagem de fundo para caber no container.
+   * EVITA setZoom para manter o texto nítido.
    */
   function resizeCanvasToImage() {
     if (!canvas || !canvas.backgroundImage) return;
 
     const container = document.getElementById("meme-preview-container");
-    const maxWidth = container.clientWidth - 20; // Margem de segurança
+    const maxWidth = container.clientWidth - 20;
     const maxHeight = 1200;
 
     const img = canvas.backgroundImage;
@@ -59,12 +59,16 @@ document.addEventListener("DOMContentLoaded", () => {
       scale = maxHeight / img.height;
     }
 
+    // Redimensiona o canvas físico
     canvas.setDimensions({
       width: img.width * scale,
       height: img.height * scale,
     });
 
-    canvas.setZoom(scale);
+    // Escala apenas a imagem, NÃO o zoom global do canvas
+    img.scaleX = scale;
+    img.scaleY = scale;
+
     canvas.renderAll();
   }
 
@@ -83,9 +87,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  /**
-   * Limpa alertas existentes.
-   */
   function clearAlerts() {
     if (alertContainer) {
       alertContainer.innerHTML = "";
@@ -121,16 +122,15 @@ document.addEventListener("DOMContentLoaded", () => {
           initCanvas();
 
           fabric.Image.fromURL(e.target.result, (img) => {
-            // Limpa objetos anteriores com segurança
             const objects = canvas.getObjects();
             canvas.remove(...objects);
 
-            // Define imagem de fundo
             canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
               originX: "left",
               originY: "top",
             });
 
+            // Pequeno delay para garantir que o container renderizou
             setTimeout(() => resizeCanvasToImage(), 50);
           });
         };
@@ -151,15 +151,18 @@ document.addEventListener("DOMContentLoaded", () => {
         top: canvas.height / 2,
         fontFamily: "Impact",
         fontSize: 40,
+        fontWeight: "bold",
         fill: "#ffffff",
         stroke: "#000000",
-        strokeWidth: 2,
+        strokeWidth: 1.5,
+        strokeUniform: true,
         textAlign: "center",
         originX: "center",
         originY: "center",
-        selectable: true,
-        hasControls: true,
-        hasBorders: true,
+        cornerColor: "#007bff",
+        cornerSize: 10,
+        transparentCorners: false,
+        objectCaching: false,
       });
 
       canvas.add(text);
@@ -171,7 +174,6 @@ document.addEventListener("DOMContentLoaded", () => {
   if (clearCanvasBtn) {
     clearCanvasBtn.addEventListener("click", () => {
       if (canvas) {
-        // REMOÇÃO ATÔMICA - Evita congelamento
         const objects = canvas.getObjects();
         canvas.remove(...objects);
         canvas.renderAll();
@@ -189,10 +191,17 @@ document.addEventListener("DOMContentLoaded", () => {
       canvas.discardActiveObject();
       canvas.renderAll();
 
+      const img = canvas.backgroundImage;
+      const currentScale = img.scaleX;
+
+      // O multiplicador inverte a escala aplicada para o preview,
+      // garantindo que o download seja no tamanho original da imagem.
+      const exportMultiplier = 1 / currentScale;
+
       const dataURL = canvas.toDataURL({
         format: "png",
         quality: 1,
-        multiplier: 1 / canvas.getZoom(), // Baixa na resolução original
+        multiplier: exportMultiplier,
       });
 
       const link = document.createElement("a");
