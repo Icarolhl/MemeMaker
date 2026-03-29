@@ -83,6 +83,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    /**
+     * Limpa alertas existentes.
+     */
+    function clearAlerts() {
+        if (alertContainer) {
+            alertContainer.innerHTML = '';
+        }
+    }
+
     if (imageUpload) {
         imageUpload.addEventListener('change', function(event) {
             const file = this.files[0];
@@ -90,8 +99,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 const validMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
                 if (!validMimeTypes.includes(file.type)) {
                     showAlert('Arquivo não suportado!', 'danger');
+                    this.value = '';
+                    if (customFileLabel) customFileLabel.textContent = 'Selecionar imagem...';
                     return;
                 }
+
+                clearAlerts();
 
                 if (customFileLabel) {
                     customFileLabel.textContent = file.name;

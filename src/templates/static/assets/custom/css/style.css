@@ -1,6 +1,6 @@
 /* Truncate long file names in Bootstrap 4 custom-file-input */
 .custom-file-label {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
