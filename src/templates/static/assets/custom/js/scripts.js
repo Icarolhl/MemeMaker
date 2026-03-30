@@ -9,10 +9,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const textControlsSection = document.getElementById("text-controls-section");
   const textBoxesContainer = document.getElementById("text-boxes-container");
 
-  // Botões de Ação
+  // Botões de Ação Principais
   const addTextBtn = document.getElementById("addTextBtn");
   const clearCanvasBtn = document.getElementById("clearCanvasBtn");
   const downloadMemeBtn = document.getElementById("downloadMemeBtn");
+
+  // Botões de Ações Rápidas
+  const rotateImgBtn = document.getElementById("rotateImgBtn");
+  const addPaddingBtn = document.getElementById("addPaddingBtn");
+  const addOverlayBtn = document.getElementById("addOverlayBtn");
+  const overlayUpload = document.getElementById("overlayUpload");
+  const toggleDrawBtn = document.getElementById("toggleDrawBtn");
 
   let canvas = null;
 
@@ -26,6 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     if (canvasWrapper) {
       canvasWrapper.style.display = "block";
+      canvasWrapper.classList.add("has-image");
     }
 
     if (!canvas && memeCanvasElement) {
@@ -33,9 +41,14 @@ document.addEventListener("DOMContentLoaded", () => {
         preserveObjectStacking: true,
         backgroundColor: "transparent",
         selection: true,
-        enableRetinaScaling: true, // Ativa suporte a telas high-DPI
+        enableRetinaScaling: true,
         imageSmoothingEnabled: true,
       });
+
+      // Configuração básica do pincel
+      canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
+      canvas.freeDrawingBrush.width = 5;
+      canvas.freeDrawingBrush.color = "#ff0000";
 
       // Evento para atualizar textarea quando o texto é editado no canvas
       canvas.on("text:changed", (e) => {
@@ -47,6 +60,33 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         }
       });
+
+      // Evento para desativar modo desenho ao selecionar objeto
+      canvas.on("selection:created", () => {
+        if (canvas.isDrawingMode) {
+          toggleDrawingMode(false);
+        }
+      });
+    }
+  }
+
+  /**
+   * Alterna o modo de desenho
+   */
+  function toggleDrawingMode(forceState = null) {
+    if (!canvas) return;
+    
+    const newState = forceState !== null ? forceState : !canvas.isDrawingMode;
+    canvas.isDrawingMode = newState;
+    
+    if (toggleDrawBtn) {
+      if (newState) {
+        toggleDrawBtn.classList.add("active");
+        canvas.defaultCursor = "crosshair";
+      } else {
+        toggleDrawBtn.classList.remove("active");
+        canvas.defaultCursor = "default";
+      }
     }
   }
 
@@ -79,13 +119,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const textarea = controlWrapper.querySelector(".text-sync-input");
     const removeBtn = controlWrapper.querySelector(".remove-text-btn");
 
-    // Sincroniza textarea -> canvas
     textarea.addEventListener("input", (e) => {
       textObject.set("text", e.target.value);
       canvas.renderAll();
     });
 
-    // Remove texto
     removeBtn.addEventListener("click", () => {
       canvas.remove(textObject);
       controlWrapper.remove();
@@ -93,9 +131,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /**
-   * Atualiza a visibilidade da seção de controles de texto
-   */
   function updateTextControlsVisibility() {
     const textObjects = canvas.getObjects("i-text");
     if (textObjects.length === 0 && textControlsSection) {
@@ -104,8 +139,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /**
-   * Ajusta o tamanho do canvas e escala a imagem de fundo para caber no container.
-   * EVITA setZoom para manter o texto nítido.
+   * Ajusta o tamanho do canvas e escala a imagem de fundo.
+   * Suporta rotação da imagem de fundo.
    */
   function resizeCanvasToImage() {
     if (!canvas || !canvas.backgroundImage) return;
@@ -115,26 +150,31 @@ document.addEventListener("DOMContentLoaded", () => {
     const maxHeight = 1200;
 
     const img = canvas.backgroundImage;
+    const angle = img.angle || 0;
+    
+    // Dimensões considerando a rotação
+    const isVertical = angle === 90 || angle === 270 || angle === -90 || angle === -270;
+    const renderWidth = isVertical ? img.height : img.width;
+    const renderHeight = isVertical ? img.width : img.height;
+
     let scale = 1;
-
-    if (img.width > maxWidth) {
-      scale = maxWidth / img.width;
+    if (renderWidth > maxWidth) {
+      scale = maxWidth / renderWidth;
+    }
+    if (renderHeight * scale > maxHeight) {
+      scale = maxHeight / renderHeight;
     }
 
-    if (img.height * scale > maxHeight) {
-      scale = maxHeight / img.height;
-    }
-
-    // Redimensiona o canvas físico
     canvas.setDimensions({
-      width: img.width * scale,
-      height: img.height * scale,
+      width: renderWidth * scale,
+      height: renderHeight * scale,
     });
 
-    // Escala apenas a imagem, NÃO o zoom global do canvas
     img.scaleX = scale;
     img.scaleY = scale;
-
+    
+    // Centraliza a imagem no canvas redimensionado
+    img.center();
     canvas.renderAll();
   }
 
@@ -163,48 +203,30 @@ document.addEventListener("DOMContentLoaded", () => {
     imageUpload.addEventListener("change", function (event) {
       const file = this.files[0];
       if (file) {
-        const validMimeTypes = [
-          "image/jpeg",
-          "image/jpg",
-          "image/png",
-          "image/webp",
-        ];
+        const validMimeTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
         if (!validMimeTypes.includes(file.type)) {
           showAlert("Arquivo não suportado!", "danger");
           this.value = "";
-          if (customFileLabel)
-            customFileLabel.textContent = "Selecionar imagem...";
           return;
         }
 
         clearAlerts();
-
-        if (customFileLabel) {
-          customFileLabel.textContent = file.name;
-        }
+        if (customFileLabel) customFileLabel.textContent = file.name;
 
         const reader = new FileReader();
         reader.onload = function (e) {
           initCanvas();
-
           fabric.Image.fromURL(e.target.result, (img) => {
-            const objects = canvas.getObjects();
-            canvas.remove(...objects);
-
-            // Limpa controles de texto ao carregar nova imagem
-            if (textBoxesContainer) {
-              textBoxesContainer.innerHTML = "";
-            }
-            if (textControlsSection) {
-              textControlsSection.style.display = "none";
-            }
+            canvas.clear();
+            if (textBoxesContainer) textBoxesContainer.innerHTML = "";
+            if (textControlsSection) textControlsSection.style.display = "none";
+            toggleDrawingMode(false);
 
             canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
-              originX: "left",
-              originY: "top",
+              originX: "center",
+              originY: "center",
             });
 
-            // Pequeno delay para garantir que o container renderizou
             setTimeout(() => resizeCanvasToImage(), 50);
           });
         };
@@ -246,19 +268,100 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Lógica dos Novos Botões
+  if (rotateImgBtn) {
+    rotateImgBtn.addEventListener("click", () => {
+      if (!canvas || !canvas.backgroundImage) return;
+      const img = canvas.backgroundImage;
+      img.set("angle", (img.angle + 90) % 360);
+      resizeCanvasToImage();
+    });
+  }
+
+  if (addPaddingBtn) {
+    addPaddingBtn.addEventListener("click", () => {
+      if (!canvas || !canvas.backgroundImage) return;
+      
+      const padding = 80;
+      const objects = canvas.getObjects();
+      
+      // Aumenta altura do canvas
+      canvas.setHeight(canvas.height + padding);
+      
+      // Move tudo para baixo
+      objects.forEach(obj => obj.set("top", obj.top + padding));
+      if (canvas.backgroundImage) {
+        canvas.backgroundImage.set("top", canvas.backgroundImage.top + padding);
+      }
+      
+      // Adiciona um fundo branco para o espaço novo (opcional, já que o canvas costuma ser transparente/branco)
+      canvas.setBackgroundColor("#ffffff", canvas.renderAll.bind(canvas));
+      canvas.renderAll();
+    });
+  }
+
+  if (addOverlayBtn) {
+    addOverlayBtn.addEventListener("click", () => {
+      if (!canvas || !canvas.backgroundImage) {
+        showAlert("Selecione uma imagem primeiro!");
+        return;
+      }
+      overlayUpload.click();
+    });
+  }
+
+  if (overlayUpload) {
+    overlayUpload.addEventListener("change", function(e) {
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(f) {
+          fabric.Image.fromURL(f.target.result, (img) => {
+            img.scaleToWidth(canvas.width * 0.4);
+            img.set({
+              left: canvas.width / 2,
+              top: canvas.height / 2,
+              originX: "center",
+              originY: "center",
+              cornerColor: "#28a745",
+              cornerSize: 10,
+              transparentCorners: false
+            });
+            canvas.add(img);
+            canvas.setActiveObject(img);
+            canvas.renderAll();
+          });
+        };
+        reader.readAsDataURL(file);
+        this.value = ""; // Reset para permitir carregar a mesma imagem
+      }
+    });
+  }
+
+  if (toggleDrawBtn) {
+    toggleDrawBtn.addEventListener("click", () => {
+      if (!canvas || !canvas.backgroundImage) {
+        showAlert("Selecione uma imagem primeiro!");
+        return;
+      }
+      toggleDrawingMode();
+    });
+  }
+
   if (clearCanvasBtn) {
     clearCanvasBtn.addEventListener("click", () => {
       if (canvas) {
+        // Remove todos os objetos (textos, imagens sobrepostas, desenhos) 
+        // sem afetar a imagem de fundo (backgroundImage)
         const objects = canvas.getObjects();
         canvas.remove(...objects);
         
-        // Limpa controles de texto
-        if (textBoxesContainer) {
-          textBoxesContainer.innerHTML = "";
-        }
-        if (textControlsSection) {
-          textControlsSection.style.display = "none";
-        }
+        // Limpa controles de texto na barra lateral
+        if (textBoxesContainer) textBoxesContainer.innerHTML = "";
+        if (textControlsSection) textControlsSection.style.display = "none";
+        
+        // Desativa modo desenho se estiver ativo
+        toggleDrawingMode(false);
         
         canvas.renderAll();
       }
@@ -273,13 +376,11 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       canvas.discardActiveObject();
+      toggleDrawingMode(false);
       canvas.renderAll();
 
       const img = canvas.backgroundImage;
       const currentScale = img.scaleX;
-
-      // O multiplicador inverte a escala aplicada para o preview,
-      // garantindo que o download seja no tamanho original da imagem.
       const exportMultiplier = 1 / currentScale;
 
       const dataURL = canvas.toDataURL({
