@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const downloadMemeBtn = document.getElementById("downloadMemeBtn");
 
   // Botões de Ações Rápidas
+  const canvasQuickActions = document.getElementById("canvasQuickActions");
   const rotateImgBtn = document.getElementById("rotateImgBtn");
   const addPaddingBtn = document.getElementById("addPaddingBtn");
   const addOverlayBtn = document.getElementById("addOverlayBtn");
@@ -34,6 +35,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (canvasWrapper) {
       canvasWrapper.style.display = "block";
       canvasWrapper.classList.add("has-image");
+    }
+    
+    // Mostra os botões de ação rápida
+    if (canvasQuickActions) {
+      canvasQuickActions.classList.add("show");
     }
 
     if (!canvas && memeCanvasElement) {

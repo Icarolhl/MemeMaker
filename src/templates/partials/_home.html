@@ -13,11 +13,16 @@
         position: absolute;
         top: 15px;
         right: 15px;
-        z-index: 100;
+        z-index: 1000; /* Z-index alto para ficar sobre o canvas do Fabric.js */
         display: none;
         flex-direction: column;
         gap: 8px;
     }
+    /* Classe para mostrar os botões via JS */
+    .canvas-quick-actions.show {
+        display: flex;
+    }
+    
     .quick-action-btn {
         width: 38px;
         height: 38px;
@@ -42,11 +47,6 @@
         background: #007bff;
         color: white;
         border-color: #007bff;
-    }
-    
-    /* Para quando o canvas estiver carregado */
-    #canvas-wrapper.has-image + .canvas-quick-actions {
-        display: flex;
     }
 </style>
 
