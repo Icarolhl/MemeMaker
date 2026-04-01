@@ -86,9 +86,68 @@
                                 <p class="text-muted small mt-2">Você poderá arrastar, redimensionar e editar os textos diretamente na imagem.</p>
                             </div>
 
+                            <!-- Gerenciamento de Espaçamento (Padding) -->
+                            <div id="padding-controls-section" class="mb-4" style="display: none;">
+                                <label class="font-weight-bold mb-2">3. Ajustar Espaçamento</label>
+                                <div class="card bg-light border-0 rounded p-3">
+                                    <!-- Posição -->
+                                    <div class="form-group mb-3">
+                                        <label class="small font-weight-bold text-muted text-uppercase">Posição</label>
+                                        <select class="form-control form-control-sm" id="paddingPosition">
+                                            <option value="none">Sem espaço</option>
+                                            <option value="top">Apenas no topo</option>
+                                            <option value="bottom">Apenas embaixo</option>
+                                            <option value="both" selected>Topo e Embaixo</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Tamanho -->
+                                    <div class="form-group mb-3">
+                                        <label class="small font-weight-bold text-muted text-uppercase d-block">Tamanho</label>
+                                        <div class="btn-group btn-group-toggle w-100" data-toggle="buttons">
+                                            <label class="btn btn-outline-secondary btn-sm">
+                                                <input type="radio" name="paddingSize" value="40"> P
+                                            </label>
+                                            <label class="btn btn-outline-secondary btn-sm active">
+                                                <input type="radio" name="paddingSize" value="80" checked> M
+                                            </label>
+                                            <label class="btn btn-outline-secondary btn-sm">
+                                                <input type="radio" name="paddingSize" value="120"> G
+                                            </label>
+                                            <label class="btn btn-outline-secondary btn-sm">
+                                                <input type="radio" name="paddingSize" value="160"> XG
+                                            </label>
+                                            <label class="btn btn-outline-secondary btn-sm">
+                                                <input type="radio" name="paddingSize" value="200"> MAX
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <!-- Cor -->
+                                    <div class="form-group mb-0">
+                                        <label class="small font-weight-bold text-muted text-uppercase d-block">Cor do Fundo</label>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="custom-control custom-radio mr-3">
+                                                <input type="radio" id="colorWhite" name="paddingColorType" class="custom-control-input" value="white" checked>
+                                                <label class="custom-control-label small" for="colorWhite">Branco</label>
+                                            </div>
+                                            <div class="custom-control custom-radio d-flex align-items-center">
+                                                <input type="radio" id="colorCustom" name="paddingColorType" class="custom-control-input" value="custom">
+                                                <label class="custom-control-label small mr-2" for="colorCustom">Custom</label>
+                                                <input type="color" id="paddingCustomColor" class="form-control-color border-0 p-0" value="#ffffff" style="width: 25px; height: 25px; border-radius: 4px; display: none;">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button type="button" class="btn btn-primary btn-sm btn-block mt-3" id="applyPaddingBtn">
+                                        Aplicar Espaçamento
+                                    </button>
+                                </div>
+                            </div>
+
                             <!-- Gerenciamento de Textos -->
                             <div id="text-controls-section" class="mb-4" style="display: none;">
-                                <label class="font-weight-bold">3. Editar Textos</label>
+                                <label class="font-weight-bold">4. Editar Textos</label>
                                 <div id="text-boxes-container" class="mt-2">
                                     <!-- Os controles de texto serão inseridos aqui dinamicamente -->
                                 </div>

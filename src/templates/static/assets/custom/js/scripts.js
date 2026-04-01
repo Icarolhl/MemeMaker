@@ -22,7 +22,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const overlayUpload = document.getElementById("overlayUpload");
   const toggleDrawBtn = document.getElementById("toggleDrawBtn");
 
+  // Controles de Espaçamento (Padding)
+  const paddingControlsSection = document.getElementById("padding-controls-section");
+  const paddingPositionSelect = document.getElementById("paddingPosition");
+  const paddingColorTypeRadios = document.getElementsByName("paddingColorType");
+  const paddingCustomColorInput = document.getElementById("paddingCustomColor");
+  const applyPaddingBtn = document.getElementById("applyPaddingBtn");
+
   let canvas = null;
+  let originalImageWidth = 0;
+  let originalImageHeight = 0;
+  let currentPaddingTop = 0;
+  let currentPaddingBottom = 0;
 
   /**
    * Inicializa o Fabric Canvas
@@ -281,28 +292,76 @@ document.addEventListener("DOMContentLoaded", () => {
       const img = canvas.backgroundImage;
       img.set("angle", (img.angle + 90) % 360);
       resizeCanvasToImage();
+      currentPaddingTop = 0;
+      currentPaddingBottom = 0;
     });
   }
 
   if (addPaddingBtn) {
     addPaddingBtn.addEventListener("click", () => {
-      if (!canvas || !canvas.backgroundImage) return;
-      
-      const padding = 80;
-      const objects = canvas.getObjects();
-      
-      // Aumenta altura do canvas
-      canvas.setHeight(canvas.height + padding);
-      
-      // Move tudo para baixo
-      objects.forEach(obj => obj.set("top", obj.top + padding));
-      if (canvas.backgroundImage) {
-        canvas.backgroundImage.set("top", canvas.backgroundImage.top + padding);
+      if (!canvas || !canvas.backgroundImage) {
+        showAlert("Selecione uma imagem primeiro!");
+        return;
       }
-      
-      // Adiciona um fundo branco para o espaço novo (opcional, já que o canvas costuma ser transparente/branco)
-      canvas.setBackgroundColor("#ffffff", canvas.renderAll.bind(canvas));
-      canvas.renderAll();
+      const isVisible = paddingControlsSection.style.display === "block";
+      paddingControlsSection.style.display = isVisible ? "none" : "block";
+      if (!isVisible) {
+        paddingControlsSection.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    });
+  }
+
+  if (paddingColorTypeRadios) {
+    paddingColorTypeRadios.forEach((radio) => {
+      radio.addEventListener("change", (e) => {
+        if (paddingCustomColorInput) {
+          paddingCustomColorInput.style.display =
+            e.target.value === "custom" ? "inline-block" : "none";
+        }
+      });
+    });
+  }
+
+  if (applyPaddingBtn) {
+    applyPaddingBtn.addEventListener("click", () => {
+      if (!canvas || !canvas.backgroundImage) return;
+
+      const position = paddingPositionSelect.value;
+      const size = parseInt(
+        document.querySelector('input[name="paddingSize"]:checked').value
+      );
+      const colorType = document.querySelector(
+        'input[name="paddingColorType"]:checked'
+      ).value;
+      const customColor = paddingCustomColorInput.value;
+      const bgColor = colorType === "white" ? "#ffffff" : customColor;
+
+      // Reset para o estado base para evitar acúmulo
+      resizeCanvasToImage();
+
+      const baseHeight = canvas.height;
+      const objects = canvas.getObjects();
+      const bgImg = canvas.backgroundImage;
+
+      let paddingTop = 0;
+      let paddingBottom = 0;
+
+      if (position === "top" || position === "both") paddingTop = size;
+      if (position === "bottom" || position === "both") paddingBottom = size;
+
+      canvas.setHeight(baseHeight + paddingTop + paddingBottom);
+      bgImg.set("top", baseHeight / 2 + paddingTop);
+
+      objects.forEach((obj) => {
+        obj.set("top", obj.top + paddingTop);
+      });
+
+      canvas.setBackgroundColor(bgColor, canvas.renderAll.bind(canvas));
+
+      currentPaddingTop = paddingTop;
+      currentPaddingBottom = paddingBottom;
+
+      showAlert("Espaçamento aplicado!", "success");
     });
   }
 
