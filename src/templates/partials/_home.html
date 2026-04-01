@@ -35,9 +35,76 @@
                                 <button type="button" class="btn quick-action-btn" id="rotateImgBtn" title="Girar Imagem (90°)">
                                     <i class="fas fa-redo"></i>
                                 </button>
-                                <button type="button" class="btn quick-action-btn" id="addPaddingBtn" title="Adicionar Espaço Top/Bottom">
-                                    <i class="fas fa-arrows-alt-v"></i>
-                                </button>
+                                <div class="position-relative">
+                                    <button type="button" class="btn quick-action-btn" id="addPaddingBtn" title="Ajustar Espaço (Padding)">
+                                        <i class="fas fa-arrows-alt-v"></i>
+                                    </button>
+                                    
+                                    <!-- Menu Flutuante de Padding (Sutil e Elegante) -->
+                                    <div id="padding-floating-menu" class="padding-popover" style="display: none;">
+                                        <div class="padding-popover-content p-3">
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <span class="small font-weight-bold text-dark text-uppercase" style="letter-spacing: 0.5px; font-size: 10px;">Configurar Espaço</span>
+                                                <button type="button" class="close small" id="closePaddingMenu">&times;</button>
+                                            </div>
+                                            
+                                            <!-- Posição -->
+                                            <div class="mb-3">
+                                                <label class="small text-muted mb-1 d-block" style="font-size: 9px; text-transform: uppercase;">Posição</label>
+                                                <select class="form-control form-control-sm border-0 bg-light" id="paddingPosition" style="font-size: 11px; border-radius: 8px;">
+                                                    <option value="none">Sem espaço</option>
+                                                    <option value="top">Topo</option>
+                                                    <option value="bottom">Baixo</option>
+                                                    <option value="both" selected>Ambos</option>
+                                                </select>
+                                            </div>
+
+                                            <!-- Tamanho (Dropdown) -->
+                                            <div class="mb-3">
+                                                <label class="small text-muted mb-1 d-block" style="font-size: 9px; text-transform: uppercase;">Tamanho</label>
+                                                <select class="form-control form-control-sm border-0 bg-light" id="paddingSize" style="font-size: 11px; border-radius: 8px;">
+                                                    <option value="20">Muito Pequeno (20px)</option>
+                                                    <option value="40">Pequeno (40px)</option>
+                                                    <option value="80" selected>Médio (80px)</option>
+                                                    <option value="120">Grande (120px)</option>
+                                                    <option value="160">Muito Grande (160px)</option>
+                                                </select>
+                                            </div>
+
+                                            <!-- Cor (Swatches) -->
+                                            <div class="padding-color-selector">
+                                                <label class="small text-muted mb-2 d-block" style="font-size: 9px; text-transform: uppercase;">Cor do Fundo</label>
+                                                <div class="d-flex align-items-center justify-content-between px-1">
+                                                    <!-- Swatch Branco -->
+                                                    <div class="color-swatch-wrapper">
+                                                        <input type="radio" id="colorWhite" name="paddingColorType" value="white" checked style="display:none">
+                                                        <label for="colorWhite" class="color-swatch swatch-white active" title="Branco"></label>
+                                                    </div>
+                                                    <!-- Swatch Preto -->
+                                                    <div class="color-swatch-wrapper">
+                                                        <input type="radio" id="colorBlack" name="paddingColorType" value="black" style="display:none">
+                                                        <label for="colorBlack" class="color-swatch swatch-black" title="Preto"></label>
+                                                    </div>
+                                                    <!-- Swatch Cinza -->
+                                                    <div class="color-swatch-wrapper">
+                                                        <input type="radio" id="colorGray" name="paddingColorType" value="gray" style="display:none">
+                                                        <label for="colorGray" class="color-swatch swatch-gray" title="Cinza"></label>
+                                                    </div>
+                                                    <!-- Swatch Custom -->
+                                                    <div class="color-swatch-wrapper">
+                                                        <input type="radio" id="colorCustom" name="paddingColorType" value="custom" style="display:none">
+                                                        <div class="custom-color-container">
+                                                            <label for="colorCustom" class="color-swatch swatch-custom" title="Personalizado">
+                                                                <i class="fas fa-plus" style="font-size: 8px; color: #666;"></i>
+                                                            </label>
+                                                            <input type="color" id="paddingCustomColor" class="color-wheel-hidden" value="#ffffff">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <button type="button" class="btn quick-action-btn" id="addOverlayBtn" title="Adicionar Sobreposição">
                                     <i class="fas fa-image"></i>
                                 </button>
@@ -86,68 +153,9 @@
                                 <p class="text-muted small mt-2">Você poderá arrastar, redimensionar e editar os textos diretamente na imagem.</p>
                             </div>
 
-                            <!-- Gerenciamento de Espaçamento (Padding) -->
-                            <div id="padding-controls-section" class="mb-4" style="display: none;">
-                                <label class="font-weight-bold mb-2">3. Ajustar Espaçamento</label>
-                                <div class="card bg-light border-0 rounded p-3">
-                                    <!-- Posição -->
-                                    <div class="form-group mb-3">
-                                        <label class="small font-weight-bold text-muted text-uppercase">Posição</label>
-                                        <select class="form-control form-control-sm" id="paddingPosition">
-                                            <option value="none">Sem espaço</option>
-                                            <option value="top">Apenas no topo</option>
-                                            <option value="bottom">Apenas embaixo</option>
-                                            <option value="both" selected>Topo e Embaixo</option>
-                                        </select>
-                                    </div>
-
-                                    <!-- Tamanho -->
-                                    <div class="form-group mb-3">
-                                        <label class="small font-weight-bold text-muted text-uppercase d-block">Tamanho</label>
-                                        <div class="btn-group btn-group-toggle w-100" data-toggle="buttons">
-                                            <label class="btn btn-outline-secondary btn-sm">
-                                                <input type="radio" name="paddingSize" value="40"> P
-                                            </label>
-                                            <label class="btn btn-outline-secondary btn-sm active">
-                                                <input type="radio" name="paddingSize" value="80" checked> M
-                                            </label>
-                                            <label class="btn btn-outline-secondary btn-sm">
-                                                <input type="radio" name="paddingSize" value="120"> G
-                                            </label>
-                                            <label class="btn btn-outline-secondary btn-sm">
-                                                <input type="radio" name="paddingSize" value="160"> XG
-                                            </label>
-                                            <label class="btn btn-outline-secondary btn-sm">
-                                                <input type="radio" name="paddingSize" value="200"> MAX
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    <!-- Cor -->
-                                    <div class="form-group mb-0">
-                                        <label class="small font-weight-bold text-muted text-uppercase d-block">Cor do Fundo</label>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <div class="custom-control custom-radio mr-3">
-                                                <input type="radio" id="colorWhite" name="paddingColorType" class="custom-control-input" value="white" checked>
-                                                <label class="custom-control-label small" for="colorWhite">Branco</label>
-                                            </div>
-                                            <div class="custom-control custom-radio d-flex align-items-center">
-                                                <input type="radio" id="colorCustom" name="paddingColorType" class="custom-control-input" value="custom">
-                                                <label class="custom-control-label small mr-2" for="colorCustom">Custom</label>
-                                                <input type="color" id="paddingCustomColor" class="form-control-color border-0 p-0" value="#ffffff" style="width: 25px; height: 25px; border-radius: 4px; display: none;">
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <button type="button" class="btn btn-primary btn-sm btn-block mt-3" id="applyPaddingBtn">
-                                        Aplicar Espaçamento
-                                    </button>
-                                </div>
-                            </div>
-
                             <!-- Gerenciamento de Textos -->
                             <div id="text-controls-section" class="mb-4" style="display: none;">
-                                <label class="font-weight-bold">4. Editar Textos</label>
+                                <label class="font-weight-bold">3. Editar Textos</label>
                                 <div id="text-boxes-container" class="mt-2">
                                     <!-- Os controles de texto serão inseridos aqui dinamicamente -->
                                 </div>

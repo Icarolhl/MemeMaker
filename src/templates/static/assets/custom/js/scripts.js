@@ -23,17 +23,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const toggleDrawBtn = document.getElementById("toggleDrawBtn");
 
   // Controles de Espaçamento (Padding)
-  const paddingControlsSection = document.getElementById("padding-controls-section");
+  const paddingFloatingMenu = document.getElementById("padding-floating-menu");
+  const closePaddingMenu = document.getElementById("closePaddingMenu");
   const paddingPositionSelect = document.getElementById("paddingPosition");
+  const paddingSizeSelect = document.getElementById("paddingSize");
   const paddingColorTypeRadios = document.getElementsByName("paddingColorType");
   const paddingCustomColorInput = document.getElementById("paddingCustomColor");
-  const applyPaddingBtn = document.getElementById("applyPaddingBtn");
 
   let canvas = null;
-  let originalImageWidth = 0;
-  let originalImageHeight = 0;
   let currentPaddingTop = 0;
   let currentPaddingBottom = 0;
+  let currentPaddingColor = "#ffffff";
+  let topPaddingRect = null;
+  let bottomPaddingRect = null;
 
   /**
    * Inicializa o Fabric Canvas
@@ -157,7 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /**
    * Ajusta o tamanho do canvas e escala a imagem de fundo.
-   * Suporta rotação da imagem de fundo.
+   * Aplica padding persistente usando retângulos físicos para preservar transparência.
    */
   function resizeCanvasToImage() {
     if (!canvas || !canvas.backgroundImage) return;
@@ -182,17 +184,122 @@ document.addEventListener("DOMContentLoaded", () => {
       scale = maxHeight / renderHeight;
     }
 
+    const finalWidth = renderWidth * scale;
+    const baseHeight = renderHeight * scale;
+
+    // Aplica dimensões com padding
     canvas.setDimensions({
-      width: renderWidth * scale,
-      height: renderHeight * scale,
+      width: finalWidth,
+      height: baseHeight + currentPaddingTop + currentPaddingBottom,
     });
 
     img.scaleX = scale;
     img.scaleY = scale;
     
-    // Centraliza a imagem no canvas redimensionado
+    // Centraliza a imagem no canvas e ajusta verticalmente pelo padding
     img.center();
+    img.set("top", (baseHeight / 2) + currentPaddingTop);
+
+    // Gerenciamento de Retângulos de Padding para preservar transparência central
+    // Remove retângulos antigos se existirem
+    if (topPaddingRect) canvas.remove(topPaddingRect);
+    if (bottomPaddingRect) canvas.remove(bottomPaddingRect);
+
+    // Cria retângulo superior se houver padding top
+    if (currentPaddingTop > 0) {
+      topPaddingRect = new fabric.Rect({
+        left: 0,
+        top: 0,
+        width: finalWidth,
+        height: currentPaddingTop,
+        fill: currentPaddingColor,
+        selectable: false,
+        evented: false,
+        hoverCursor: "default",
+        id: "padding-rect-top"
+      });
+      canvas.add(topPaddingRect);
+      canvas.sendToBack(topPaddingRect);
+    }
+
+    // Cria retângulo inferior se houver padding bottom
+    if (currentPaddingBottom > 0) {
+      bottomPaddingRect = new fabric.Rect({
+        left: 0,
+        top: baseHeight + currentPaddingTop,
+        width: finalWidth,
+        height: currentPaddingBottom,
+        fill: currentPaddingColor,
+        selectable: false,
+        evented: false,
+        hoverCursor: "default",
+        id: "padding-rect-bottom"
+      });
+      canvas.add(bottomPaddingRect);
+      canvas.sendToBack(bottomPaddingRect);
+    }
+
+    // O fundo do canvas deve ser sempre transparente para respeitar o PNG original
+    canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
+    
     canvas.renderAll();
+  }
+
+  /**
+   * Atualiza o padding instantaneamente
+   */
+  function updatePadding() {
+    if (!canvas || !canvas.backgroundImage) return;
+
+    const position = paddingPositionSelect.value;
+    const size = parseInt(paddingSizeSelect.value) || 0;
+    
+    const colorTypeInput = document.querySelector('input[name="paddingColorType"]:checked');
+    const colorType = colorTypeInput ? colorTypeInput.value : "white";
+    const customSwatch = document.querySelector(".swatch-custom");
+    
+    if (colorType === "white") {
+        currentPaddingColor = "#ffffff";
+    } else if (colorType === "black") {
+        currentPaddingColor = "#000000";
+    } else if (colorType === "gray") {
+        currentPaddingColor = "#888888";
+    } else {
+        currentPaddingColor = paddingCustomColorInput.value;
+        // Atualiza a cor da swatch personalizada
+        if (customSwatch) customSwatch.style.background = currentPaddingColor;
+    }
+
+    // Atualiza classes ativas nos swatches
+    document.querySelectorAll(".color-swatch").forEach(swatch => {
+        const inputId = swatch.getAttribute("for");
+        const input = document.getElementById(inputId);
+        if (input && input.checked) {
+            swatch.classList.add("active");
+        } else {
+            swatch.classList.remove("active");
+        }
+    });
+
+    const oldPaddingTop = currentPaddingTop;
+    
+    let paddingTop = 0;
+    let paddingBottom = 0;
+
+    if (position === "top" || position === "both") paddingTop = size;
+    if (position === "bottom" || position === "both") paddingBottom = size;
+
+    currentPaddingTop = paddingTop;
+    currentPaddingBottom = paddingBottom;
+
+    // Reposiciona objetos baseados na mudança do padding superior
+    const objects = canvas.getObjects();
+    const diff = currentPaddingTop - oldPaddingTop;
+    objects.forEach(obj => {
+      obj.set("top", obj.top + diff);
+    });
+
+    resizeCanvasToImage();
   }
 
   function showAlert(message, type = "warning") {
@@ -235,6 +342,8 @@ document.addEventListener("DOMContentLoaded", () => {
           initCanvas();
           fabric.Image.fromURL(e.target.result, (img) => {
             canvas.clear();
+            currentPaddingTop = 0;
+            currentPaddingBottom = 0;
             if (textBoxesContainer) textBoxesContainer.innerHTML = "";
             if (textControlsSection) textControlsSection.style.display = "none";
             toggleDrawingMode(false);
@@ -292,76 +401,50 @@ document.addEventListener("DOMContentLoaded", () => {
       const img = canvas.backgroundImage;
       img.set("angle", (img.angle + 90) % 360);
       resizeCanvasToImage();
-      currentPaddingTop = 0;
-      currentPaddingBottom = 0;
+      canvas.renderAll();
     });
   }
 
   if (addPaddingBtn) {
-    addPaddingBtn.addEventListener("click", () => {
+    addPaddingBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
       if (!canvas || !canvas.backgroundImage) {
         showAlert("Selecione uma imagem primeiro!");
         return;
       }
-      const isVisible = paddingControlsSection.style.display === "block";
-      paddingControlsSection.style.display = isVisible ? "none" : "block";
-      if (!isVisible) {
-        paddingControlsSection.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      }
+      const isVisible = paddingFloatingMenu.style.display === "block";
+      paddingFloatingMenu.style.display = isVisible ? "none" : "block";
     });
+  }
+
+  if (closePaddingMenu) {
+    closePaddingMenu.addEventListener("click", () => {
+      paddingFloatingMenu.style.display = "none";
+    });
+  }
+
+  // Listeners instantâneos para Padding
+  if (paddingPositionSelect) {
+    paddingPositionSelect.addEventListener("change", updatePadding);
+  }
+
+  if (paddingSizeSelect) {
+    paddingSizeSelect.addEventListener("change", updatePadding);
   }
 
   if (paddingColorTypeRadios) {
     paddingColorTypeRadios.forEach((radio) => {
-      radio.addEventListener("change", (e) => {
-        if (paddingCustomColorInput) {
-          paddingCustomColorInput.style.display =
-            e.target.value === "custom" ? "inline-block" : "none";
-        }
+      radio.addEventListener("change", () => {
+        updatePadding();
       });
     });
   }
 
-  if (applyPaddingBtn) {
-    applyPaddingBtn.addEventListener("click", () => {
-      if (!canvas || !canvas.backgroundImage) return;
-
-      const position = paddingPositionSelect.value;
-      const size = parseInt(
-        document.querySelector('input[name="paddingSize"]:checked').value
-      );
-      const colorType = document.querySelector(
-        'input[name="paddingColorType"]:checked'
-      ).value;
-      const customColor = paddingCustomColorInput.value;
-      const bgColor = colorType === "white" ? "#ffffff" : customColor;
-
-      // Reset para o estado base para evitar acúmulo
-      resizeCanvasToImage();
-
-      const baseHeight = canvas.height;
-      const objects = canvas.getObjects();
-      const bgImg = canvas.backgroundImage;
-
-      let paddingTop = 0;
-      let paddingBottom = 0;
-
-      if (position === "top" || position === "both") paddingTop = size;
-      if (position === "bottom" || position === "both") paddingBottom = size;
-
-      canvas.setHeight(baseHeight + paddingTop + paddingBottom);
-      bgImg.set("top", baseHeight / 2 + paddingTop);
-
-      objects.forEach((obj) => {
-        obj.set("top", obj.top + paddingTop);
-      });
-
-      canvas.setBackgroundColor(bgColor, canvas.renderAll.bind(canvas));
-
-      currentPaddingTop = paddingTop;
-      currentPaddingBottom = paddingBottom;
-
-      showAlert("Espaçamento aplicado!", "success");
+  if (paddingCustomColorInput) {
+    paddingCustomColorInput.addEventListener("input", () => {
+      const customRadio = document.getElementById("colorCustom");
+      if (customRadio) customRadio.checked = true;
+      updatePadding();
     });
   }
 

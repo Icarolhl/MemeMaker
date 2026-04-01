@@ -74,3 +74,97 @@
     position: relative;
     overflow: visible; /* Permite que os botões flutuem corretamente */
 }
+
+/* Menu Flutuante de Padding (Popover Sutil) */
+.padding-popover {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    width: 200px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    z-index: 1020;
+    border: 1px solid rgba(0,0,0,0.05);
+    animation: fadeInScale 0.2s ease-out;
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.padding-popover .btn-xs {
+    padding: 2px 5px;
+    font-size: 10px;
+}
+
+.padding-popover select.form-control-sm {
+    height: 28px;
+    padding: 2px 5px;
+}
+
+.padding-popover .close {
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+/* Color Swatches */
+.color-swatch {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0;
+}
+
+.color-swatch:hover {
+    transform: scale(1.15);
+}
+
+.color-swatch.active {
+    border-color: #007bff;
+    box-shadow: 0 0 0 1px white inset;
+}
+
+.swatch-white { background-color: #ffffff; border: 1px solid #ddd; }
+.swatch-black { background-color: #000000; }
+.swatch-gray { background-color: #888888; }
+.swatch-custom { 
+    background: conic-gradient(from 0deg, red, yellow, lime, aqua, blue, magenta, red);
+    border: 1px solid #ddd;
+}
+
+.swatch-custom.color-selected {
+    background: white; /* Será sobrescrito pelo JS */
+    border-color: #007bff;
+}
+
+.custom-color-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.color-wheel-hidden {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 2;
+}
