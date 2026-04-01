@@ -30,6 +30,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const paddingColorTypeRadios = document.getElementsByName("paddingColorType");
   const paddingCustomColorInput = document.getElementById("paddingCustomColor");
 
+  // Controles de Desenho
+  const canvasDrawingActions = document.getElementById("canvasDrawingActions");
+  const drawColorBtn = document.getElementById("drawColorBtn");
+  const drawColorPicker = document.getElementById("drawColorPicker");
+
   let canvas = null;
   let currentPaddingTop = 0;
   let currentPaddingBottom = 0;
@@ -102,9 +107,13 @@ document.addEventListener("DOMContentLoaded", () => {
       if (newState) {
         toggleDrawBtn.classList.add("active");
         canvas.defaultCursor = "crosshair";
+        // Mostra o botão de cor no topo esquerdo ao ativar
+        if (canvasDrawingActions) canvasDrawingActions.style.display = "flex";
       } else {
         toggleDrawBtn.classList.remove("active");
         canvas.defaultCursor = "default";
+        // Esconde ao desativar
+        if (canvasDrawingActions) canvasDrawingActions.style.display = "none";
       }
     }
   }
@@ -493,6 +502,25 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
       toggleDrawingMode();
+    });
+  }
+
+  // Lógica da Roda de Cores de Desenho
+  if (drawColorBtn) {
+    drawColorBtn.addEventListener("click", () => {
+      if (drawColorPicker) drawColorPicker.click();
+    });
+  }
+
+  if (drawColorPicker) {
+    drawColorPicker.addEventListener("input", (e) => {
+      const color = e.target.value;
+      if (canvas && canvas.freeDrawingBrush) {
+        canvas.freeDrawingBrush.color = color;
+      }
+      if (drawColorBtn) {
+        drawColorBtn.style.background = color;
+      }
     });
   }
 
