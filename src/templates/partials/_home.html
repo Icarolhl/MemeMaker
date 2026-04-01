@@ -7,49 +7,6 @@
 <!-- Container de Alertas -->
 <div id="alert-container"></div>
 
-<style>
-    /* Estilos para a Barra de Ações Rápidas no Canvas */
-    .canvas-quick-actions {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        z-index: 1000; /* Z-index alto para ficar sobre o canvas do Fabric.js */
-        display: none;
-        flex-direction: column;
-        gap: 8px;
-    }
-    /* Classe para mostrar os botões via JS */
-    .canvas-quick-actions.show {
-        display: flex;
-    }
-    
-    .quick-action-btn {
-        width: 38px;
-        height: 38px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: white;
-        color: #007bff;
-        border: 1px solid #dee2e6;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        transition: all 0.2s ease;
-        padding: 0;
-    }
-    .quick-action-btn:hover {
-        background: #f8f9fa;
-        color: #0056b3;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-    }
-    .quick-action-btn.active {
-        background: #007bff;
-        color: white;
-        border-color: #007bff;
-    }
-</style>
-
 <!-- Box Principal da Aplicação -->
 <div class="meme-editor-app-box py-4 px-4 bg-white border rounded shadow-sm">
     <form method="POST" enctype="multipart/form-data" id="memeForm">
