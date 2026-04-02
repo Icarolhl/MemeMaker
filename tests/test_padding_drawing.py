@@ -26,7 +26,9 @@ def handle_create_dummy_image(path: Path) -> None:
 
 
 @pytest.fixture
-def setup_meme_editor(live_server: "LiveServer", page: Page, tmp_path: Path) -> None:
+def setup_meme_editor(
+    live_server: "LiveServer", page: Page, tmp_path: Path
+) -> None:
     """Abre a página e carrega uma imagem de teste."""
     img_path = tmp_path / "test_image.png"
     handle_create_dummy_image(img_path)
@@ -54,24 +56,28 @@ def test_padding_menu_visibility(live_server: "LiveServer", page: Page) -> None:
 
 @pytest.mark.usefixtures("setup_meme_editor")
 @pytest.mark.django_db
-def test_padding_application_instant(live_server: "LiveServer", page: Page) -> None:
+def test_padding_application_instant(
+    live_server: "LiveServer", page: Page
+) -> None:
     """Verifica se a mudança de padding altera a altura do canvas no DOM."""
     # Pega altura inicial do canvas via atributo HTML
     canvas = page.locator("#meme-canvas")
     initial_height = int(canvas.get_attribute("height") or 0)
 
+    # ABRE O MENU primeiro para tornar os controles visíveis
     page.click("#addPaddingBtn")
+    page.wait_for_selector("#padding-floating-menu", state="visible")
 
     # Seleciona posição 'Topo' (tamanho médio padrão é 80)
     page.select_option("#paddingPosition", "top")
-    page.wait_for_timeout(200)  # Aguarda renderização
+    page.wait_for_timeout(300)  # Aguarda renderização
 
     new_height = int(canvas.get_attribute("height") or 0)
     assert new_height == initial_height + 80
 
     # Muda para posição 'Ambos' (80 + 80 = 160)
     page.select_option("#paddingPosition", "both")
-    page.wait_for_timeout(200)
+    page.wait_for_timeout(300)
 
     new_height_both = int(canvas.get_attribute("height") or 0)
     assert new_height_both == initial_height + 160
@@ -79,7 +85,9 @@ def test_padding_application_instant(live_server: "LiveServer", page: Page) -> N
 
 @pytest.mark.usefixtures("setup_meme_editor")
 @pytest.mark.django_db
-def test_drawing_mode_color_selector(live_server: "LiveServer", page: Page) -> None:
+def test_drawing_mode_color_selector(
+    live_server: "LiveServer", page: Page
+) -> None:
     """Verifica se o seletor de cor do desenho aparece e o cursor muda."""
     draw_btn = page.locator("#toggleDrawBtn")
     draw_actions = page.locator("#canvasDrawingActions")
@@ -108,13 +116,18 @@ def test_drawing_mode_color_selector(live_server: "LiveServer", page: Page) -> N
 
 @pytest.mark.usefixtures("setup_meme_editor")
 @pytest.mark.django_db
-def test_rotation_persists_padding(live_server: "LiveServer", page: Page) -> None:
+def test_rotation_persists_padding(
+    live_server: "LiveServer", page: Page
+) -> None:
     """Verifica se o padding no DOM é mantido após rotacionar a imagem."""
     canvas = page.locator("#meme-canvas")
 
+    # ABRE O MENU para configurar
     page.click("#addPaddingBtn")
+    page.wait_for_selector("#padding-floating-menu", state="visible")
+
     page.select_option("#paddingPosition", "top")
-    page.wait_for_timeout(200)
+    page.wait_for_timeout(300)
 
     # Rotaciona 90 graus
     page.click("#rotateImgBtn")
@@ -123,3 +136,4 @@ def test_rotation_persists_padding(live_server: "LiveServer", page: Page) -> Non
     # A imagem é 200x200. Com padding top 80, a altura do canvas deve ser 280
     current_height = int(canvas.get_attribute("height") or 0)
     assert current_height == 280
+
