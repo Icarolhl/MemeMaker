@@ -3,7 +3,7 @@
  */
 import { initCanvas, resizeCanvasToImage, canvas, resetPaddingState } from './modules/canvas.js';
 import { addTextToCanvas, clearTextSidebar } from './modules/text-module.js';
-import { updatePadding, togglePaddingMenu, closePaddingMenu } from './modules/padding-module.js';
+import { updatePadding, togglePaddingMenu, closePaddingMenu, initPaddingHandlers } from './modules/padding-module.js';
 import { toggleDrawingMode, initDrawingHandlers } from './modules/drawing-module.js';
 import { showAlert, clearAlerts } from './modules/utils.js';
 
@@ -124,6 +124,7 @@ if (toggleDrawBtn) {
   });
 }
 initDrawingHandlers();
+initPaddingHandlers();
 
 // --- Outras Ações ---
 if (rotateImgBtn) {

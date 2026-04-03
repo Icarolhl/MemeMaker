@@ -124,3 +124,18 @@ export function closePaddingMenu() {
   paddingFloatingMenu.style.display = "none";
   if (addPaddingBtn) addPaddingBtn.classList.remove("active");
 }
+
+/**
+ * Inicializa ouvintes específicos para os controles de padding
+ */
+export function initPaddingHandlers() {
+  const customSwatch = document.querySelector(".swatch-custom");
+  const paddingCustomColor = document.getElementById("paddingCustomColor");
+
+  if (customSwatch && paddingCustomColor) {
+    customSwatch.addEventListener("click", (e) => {
+      e.preventDefault();
+      paddingCustomColor.click();
+    });
+  }
+}
