@@ -176,8 +176,10 @@ if (overlayUpload) {
 if (clearCanvasBtn) {
   clearCanvasBtn.addEventListener("click", () => {
     if (canvas) {
-      const objects = canvas.getObjects();
-      canvas.remove(...objects);
+      // Remove apenas objetos que NÃO são margens
+      const objectsToRemove = canvas.getObjects().filter(obj => !obj.isPadding);
+      canvas.remove(...objectsToRemove);
+      
       clearTextSidebar();
       toggleDrawingMode(false);
       canvas.renderAll();

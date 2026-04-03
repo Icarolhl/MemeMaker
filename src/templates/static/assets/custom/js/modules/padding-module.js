@@ -34,7 +34,8 @@ export function applyPaddingRects() {
       fill: state.currentPaddingColor,
       selectable: false,
       evented: false,
-      hoverCursor: "default"
+      hoverCursor: "default",
+      isPadding: true
     });
     canvas.add(topPaddingRect);
     canvas.sendToBack(topPaddingRect);
@@ -50,7 +51,8 @@ export function applyPaddingRects() {
       fill: state.currentPaddingColor,
       selectable: false,
       evented: false,
-      hoverCursor: "default"
+      hoverCursor: "default",
+      isPadding: true
     });
     canvas.add(bottomPaddingRect);
     canvas.sendToBack(bottomPaddingRect);
