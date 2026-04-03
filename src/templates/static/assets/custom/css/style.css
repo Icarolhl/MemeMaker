@@ -121,6 +121,13 @@ h1, h2, h3, h4, h5, h6 {
     border-color: var(--accent-primary);
 }
 
+.toolbar-btn.active {
+    background: var(--accent-primary) !important;
+    border-color: var(--accent-primary) !important;
+    color: white !important;
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+}
+
 .toolbar-group {
     display: flex;
     gap: 8px;

@@ -21,11 +21,17 @@ export function toggleDrawingMode(forceState = null) {
     if (newState) {
       toggleDrawBtn.classList.add("active");
       canvas.defaultCursor = "crosshair";
-      if (canvasDrawingActions) canvasDrawingActions.style.display = "flex";
+      if (canvasDrawingActions) {
+        canvasDrawingActions.classList.remove("d-none");
+        canvasDrawingActions.classList.add("d-flex");
+      }
     } else {
       toggleDrawBtn.classList.remove("active");
       canvas.defaultCursor = "default";
-      if (canvasDrawingActions) canvasDrawingActions.style.display = "none";
+      if (canvasDrawingActions) {
+        canvasDrawingActions.classList.remove("d-flex");
+        canvasDrawingActions.classList.add("d-none");
+      }
     }
   }
 }
