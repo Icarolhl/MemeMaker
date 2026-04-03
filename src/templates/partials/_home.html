@@ -12,108 +12,104 @@
             {% csrf_token %}
             <div class="row no-gutters">
                 
-                <!-- Área de Preview (Esquerda) -->
-                <div class="col-lg">
-                    <div id="meme-preview-container">
+                <!-- Área de Preview (Esquerda - 8 colunas) -->
+                <div class="col-lg-8">
+                    <div id="meme-preview-container" class="d-flex flex-column">
                         
-                        <!-- Toolbar Flutuante (Modern Pill) -->
-                        <div class="editor-floating-toolbar" id="editorToolbar">
-                            <button type="button" class="toolbar-btn" id="rotateImgBtn" title="Girar">
-                                <i class="fas fa-redo"></i>
-                            </button>
-                            <button type="button" class="toolbar-btn" id="addTextBtn" title="Adicionar Texto">
-                                <i class="fas fa-font"></i>
-                            </button>
-                            <button type="button" class="toolbar-btn" id="addOverlayBtn" title="Sobreposição">
-                                <i class="fas fa-plus-circle"></i>
-                            </button>
-                            <input type="file" id="overlayUpload" accept="image/*" style="display: none;">
-                            
-                            <div class="toolbar-divider"></div>
-                            
-                            <!-- Ações de Desenho -->
-                            <div class="canvas-drawing-actions d-flex align-items-center" id="canvasDrawingActions" style="display: none !important;">
-                                <div class="position-relative">
-                                    <button type="button" class="color-circle-btn" id="drawColorBtn" title="Cor"></button>
-                                    <input type="color" id="drawColorPicker" class="color-wheel-hidden" value="#ff0000">
-                                </div>
+                        <!-- Toolbar Fixa no Topo do Container (Não sobrepõe a imagem) -->
+                        <div class="editor-toolbar-header d-none" id="editorToolbar">
+                            <div class="toolbar-group">
+                                <button type="button" class="toolbar-btn" id="rotateImgBtn" title="Girar">
+                                    <i class="fas fa-redo"></i>
+                                </button>
+                                <button type="button" class="toolbar-btn" id="addTextBtn" title="Adicionar Texto">
+                                    <i class="fas fa-font"></i>
+                                </button>
+                                <button type="button" class="toolbar-btn" id="addOverlayBtn" title="Sobreposição">
+                                    <i class="fas fa-plus-circle"></i>
+                                </button>
+                                <input type="file" id="overlayUpload" accept="image/*" style="display: none;">
                             </div>
-                            <button type="button" class="toolbar-btn" id="toggleDrawBtn" title="Pincel">
-                                <i class="fas fa-pencil-alt"></i>
-                            </button>
-                            
-                            <div class="toolbar-divider"></div>
 
-                            <!-- Padding -->
-                            <div class="position-relative">
-                                <button type="button" class="toolbar-btn" id="addPaddingBtn" title="Margens">
-                                    <i class="fas fa-arrows-alt-v"></i>
+                            <div class="toolbar-group">
+                                <div class="canvas-drawing-actions d-flex align-items-center" id="canvasDrawingActions" style="display: none;">
+                                    <div class="position-relative">
+                                        <button type="button" class="color-circle-btn" id="drawColorBtn" title="Cor"></button>
+                                        <input type="color" id="drawColorPicker" class="color-wheel-hidden" value="#ff0000">
+                                    </div>
+                                </div>
+                                <button type="button" class="toolbar-btn" id="toggleDrawBtn" title="Pincel">
+                                    <i class="fas fa-pencil-alt"></i>
                                 </button>
                                 
-                                <div id="padding-floating-menu" class="padding-popover" style="display: none;">
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <span class="sidebar-label m-0">Ajustar Margens</span>
-                                        <button type="button" class="close text-white small" id="closePaddingMenu">&times;</button>
-                                    </div>
-                                    <div class="mb-2">
-                                        <select class="form-control form-control-sm" id="paddingPosition">
-                                            <option value="none">Nenhuma</option>
-                                            <option value="top">Topo</option>
-                                            <option value="bottom">Base</option>
-                                            <option value="both" selected>Ambas</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <select class="form-control form-control-sm" id="paddingSize">
-                                            <option value="20">PP</option>
-                                            <option value="40">P</option>
-                                            <option value="80" selected>M</option>
-                                            <option value="120">G</option>
-                                            <option value="160">GG</option>
-                                        </select>
-                                    </div>
-                                    <div class="d-flex align-items-center justify-content-around bg-dark p-2 rounded">
-                                        <input type="radio" id="colorWhite" name="paddingColorType" value="white" checked style="display:none">
-                                        <label for="colorWhite" class="color-swatch swatch-white active"></label>
-                                        
-                                        <input type="radio" id="colorBlack" name="paddingColorType" value="black" style="display:none">
-                                        <label for="colorBlack" class="color-swatch swatch-black"></label>
-                                        
-                                        <input type="radio" id="colorCustom" name="paddingColorType" value="custom" style="display:none">
-                                        <div class="position-relative">
-                                            <label for="colorCustom" class="color-swatch swatch-custom">
-                                                <i class="fas fa-eye-dropper" style="font-size: 8px;"></i>
-                                            </label>
-                                            <input type="color" id="paddingCustomColor" class="color-wheel-hidden" value="#ffffff">
+                                <div class="position-relative ml-2">
+                                    <button type="button" class="toolbar-btn" id="addPaddingBtn" title="Margens">
+                                        <i class="fas fa-arrows-alt-v"></i>
+                                    </button>
+                                    
+                                    <div id="padding-floating-menu" class="padding-popover" style="display: none;">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <span class="sidebar-label m-0">Margens</span>
+                                            <button type="button" class="close text-white small" id="closePaddingMenu">&times;</button>
+                                        </div>
+                                        <div class="mb-2">
+                                            <select class="form-control form-control-sm" id="paddingPosition">
+                                                <option value="none">Nenhuma</option>
+                                                <option value="top">Topo</option>
+                                                <option value="bottom">Base</option>
+                                                <option value="both" selected>Ambas</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <select class="form-control form-control-sm" id="paddingSize">
+                                                <option value="20">PP</option>
+                                                <option value="40">P</option>
+                                                <option value="80" selected>M</option>
+                                                <option value="120">G</option>
+                                                <option value="160">GG</option>
+                                            </select>
+                                        </div>
+                                        <div class="d-flex align-items-center justify-content-around bg-dark p-2 rounded">
+                                            <input type="radio" id="colorWhite" name="paddingColorType" value="white" checked style="display:none">
+                                            <label for="colorWhite" class="color-swatch swatch-white active"></label>
+                                            <input type="radio" id="colorBlack" name="paddingColorType" value="black" style="display:none">
+                                            <label for="colorBlack" class="color-swatch swatch-black"></label>
+                                            <input type="radio" id="colorCustom" name="paddingColorType" value="custom" style="display:none">
+                                            <div class="position-relative">
+                                                <label for="colorCustom" class="color-swatch swatch-custom">
+                                                    <i class="fas fa-eye-dropper" style="font-size: 8px;"></i>
+                                                </label>
+                                                <input type="color" id="paddingCustomColor" class="color-wheel-hidden" value="#ffffff">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="toolbar-divider"></div>
-
-                            <button type="button" class="toolbar-btn text-danger" id="clearCanvasBtn" title="Limpar Tudo">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
+                            <div class="toolbar-group">
+                                <button type="button" class="toolbar-btn text-danger" id="clearCanvasBtn" title="Limpar Tudo">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
                         </div>
 
-                        <!-- Área do Canvas -->
-                        <div id="placeholder-content" class="text-center opacity-50">
-                            <i class="fas fa-bolt fa-3x text-primary mb-3"></i>
-                            <h4 class="font-weight-bold">MEMEMAKER</h4>
-                            <p class="small">Upload de imagem para começar</p>
-                        </div>
+                        <!-- Área de Trabalho -->
+                        <div class="preview-work-area flex-grow-1 d-flex align-items-center justify-content-center p-4">
+                            <div id="placeholder-content" class="text-center opacity-50">
+                                <i class="fas fa-bolt fa-3x text-primary mb-3"></i>
+                                <h4 class="font-weight-bold">MEMEMAKER</h4>
+                                <p class="small">Upload de imagem para começar</p>
+                            </div>
 
-                        <div id="canvas-wrapper" style="display: none;">
-                            <canvas id="meme-canvas"></canvas>
+                            <div id="canvas-wrapper" style="display: none;">
+                                <canvas id="meme-canvas"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Sidebar de Controle (Direita) -->
-                <div class="col-lg-auto sidebar-tools p-4 d-flex flex-column" style="min-width: 300px;">
-                    
-                    <!-- 1. Imagem -->
+                <!-- Sidebar de Controle (Direita - 4 colunas) -->
+                <div class="col-lg-4 sidebar-tools p-4 d-flex flex-column" style="border-left: 1px solid var(--border-color);">
                     <div class="mb-4">
                         <label class="sidebar-label">1. Imagem Base</label>
                         <div class="custom-file-upload" onclick="document.getElementById('imageUpload').click()">
@@ -123,22 +119,17 @@
                         </div>
                     </div>
 
-                    <!-- 2. Camadas de Texto -->
-                    <div id="text-controls-section" class="flex-grow-1 overflow-auto mb-4" style="display: none;">
+                    <div id="text-controls-section" class="flex-grow-1 overflow-auto mb-4" style="display: none; max-height: 400px;">
                         <label class="sidebar-label">2. Camadas de Texto</label>
-                        <div id="text-boxes-container">
-                            <!-- Injetado via JS -->
-                        </div>
+                        <div id="text-boxes-container"></div>
                     </div>
 
-                    <!-- 3. Download -->
                     <div class="mt-auto pt-3 border-top border-secondary">
                         <button type="button" class="btn btn-success btn-block py-3 font-weight-bold shadow" id="downloadMemeBtn">
                             <i class="fas fa-download mr-2"></i>BAIXAR MEME
                         </button>
                     </div>
                 </div>
-
             </div>
         </form>
     </div>

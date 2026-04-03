@@ -40,8 +40,8 @@ export function resizeCanvasToImage() {
   if (!canvas || !canvas.backgroundImage) return;
 
   const container = document.getElementById("meme-preview-container");
-  const maxWidth = container.clientWidth - 20;
-  const maxHeight = 1200;
+  const maxWidth = container.clientWidth - 80; // Mais margem interna
+  const maxHeight = 800; // Limite de altura para não quebrar o layout
 
   const img = canvas.backgroundImage;
   const angle = img.angle || 0;
@@ -61,12 +61,20 @@ export function resizeCanvasToImage() {
 
   const finalWidth = renderWidth * scale;
   const baseHeight = renderHeight * scale;
+  const finalHeight = baseHeight + state.currentPaddingTop + state.currentPaddingBottom;
 
   // Aplica dimensões com padding
   canvas.setDimensions({
     width: finalWidth,
-    height: baseHeight + state.currentPaddingTop + state.currentPaddingBottom,
+    height: finalHeight,
   });
+
+  // Ajusta o wrapper para ter o tamanho EXATO do canvas (remove sobras de quadriculado)
+  const wrapper = document.getElementById("canvas-wrapper");
+  if (wrapper) {
+    wrapper.style.width = `${finalWidth}px`;
+    wrapper.style.height = `${finalHeight}px`;
+  }
 
   img.scaleX = scale;
   img.scaleY = scale;

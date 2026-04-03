@@ -42,7 +42,10 @@ function activateEditorUI() {
     canvasWrapper.style.display = "inline-block";
   }
   const editorToolbar = document.getElementById("editorToolbar");
-  if (editorToolbar) editorToolbar.classList.add("show");
+  if (editorToolbar) {
+    editorToolbar.classList.remove("d-none");
+    editorToolbar.classList.add("d-flex");
+  }
 }
 
 // --- Listeners de Upload ---
