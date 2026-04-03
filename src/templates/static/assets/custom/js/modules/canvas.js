@@ -86,6 +86,9 @@ export function resizeCanvasToImage() {
   // O fundo do canvas deve ser sempre transparente
   canvas.setBackgroundColor("transparent", canvas.renderAll.bind(canvas));
   
+  // RECALCULA OFFSETS: Essencial para que o modo desenho funcione após mudanças de layout
+  canvas.calcOffset();
+  
   canvas.renderAll();
 }
 

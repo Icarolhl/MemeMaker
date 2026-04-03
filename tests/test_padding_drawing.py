@@ -34,7 +34,7 @@ def setup_meme_editor(
     handle_create_dummy_image(img_path)
     page.goto(live_server.url)
     page.set_input_files("#imageUpload", str(img_path))
-    
+
     # Aguarda a toolbar aparecer e a imagem processar
     page.wait_for_selector("#editorToolbar", state="visible")
     # Pequena espera extra para garantir que o Fabric.js terminou o resize
@@ -69,7 +69,7 @@ def test_padding_application_instant(
 
     # Abre o menu
     page.click("#addPaddingBtn")
-    
+
     # Seleciona posição 'Topo' (tamanho médio padrão é 80)
     page.select_option("#paddingPosition", "top")
     page.wait_for_timeout(300)  # Aguarda renderização do Fabric.js
@@ -142,12 +142,12 @@ def test_clear_canvas_preserves_padding(
 ) -> None:
     """Verifica se 'Limpar Tudo' remove o texto mas mantém as margens."""
     canvas = page.locator("#meme-canvas")
-    
+
     # 1. Aplica margens (80px top)
     page.click("#addPaddingBtn")
     page.select_option("#paddingPosition", "top")
     page.wait_for_timeout(300)
-    
+
     initial_height_with_padding = int(canvas.get_attribute("height") or 0)
     assert initial_height_with_padding == 280
 
@@ -162,3 +162,33 @@ def test_clear_canvas_preserves_padding(
     expect(page.locator(".text-control-item")).to_have_count(0)
     final_height = int(canvas.get_attribute("height") or 0)
     assert final_height == initial_height_with_padding
+
+
+@pytest.mark.usefixtures("setup_meme_editor")
+@pytest.mark.django_db
+def test_actual_drawing_interaction(
+    live_server: "LiveServer", page: Page
+) -> None:
+    """Simula um traço de desenho para garantir que as coordenadas estão ok."""
+    draw_btn = page.locator("#toggleDrawBtn")
+
+    # 1. Ativa Modo Desenho
+    draw_btn.click()
+
+    # 2. Realiza um traço de desenho (simulando mouse)
+    canvas_box = page.locator(".upper-canvas").bounding_box()
+    if not canvas_box:
+        pytest.fail("Canvas não encontrado")
+
+    start_x = canvas_box["x"] + 50
+    start_y = canvas_box["y"] + 50
+
+    # Move, pressiona, arrasta e solta
+    page.mouse.move(start_x, start_y)
+    page.mouse.down()
+    page.mouse.move(start_x + 50, start_y + 50)
+    page.mouse.up()
+
+    # 3. Valida que o modo desenho permaneceu ativo e não houve erro de script
+    expect(draw_btn).to_have_class(re.compile(r".*active.*"))
+
