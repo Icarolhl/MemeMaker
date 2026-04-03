@@ -34,7 +34,8 @@ export function applyPaddingRects() {
       fill: state.currentPaddingColor,
       selectable: false,
       evented: false,
-      hoverCursor: "default"
+      hoverCursor: "default",
+      isPadding: true
     });
     canvas.add(topPaddingRect);
     canvas.sendToBack(topPaddingRect);
@@ -50,7 +51,8 @@ export function applyPaddingRects() {
       fill: state.currentPaddingColor,
       selectable: false,
       evented: false,
-      hoverCursor: "default"
+      hoverCursor: "default",
+      isPadding: true
     });
     canvas.add(bottomPaddingRect);
     canvas.sendToBack(bottomPaddingRect);
@@ -107,10 +109,35 @@ export function updatePadding() {
 
 export function togglePaddingMenu(e) {
   e.stopPropagation();
+  const addPaddingBtn = document.getElementById("addPaddingBtn");
   const isVisible = paddingFloatingMenu.style.display === "block";
-  paddingFloatingMenu.style.display = isVisible ? "none" : "block";
+  
+  if (isVisible) {
+    paddingFloatingMenu.style.display = "none";
+    if (addPaddingBtn) addPaddingBtn.classList.remove("active");
+  } else {
+    paddingFloatingMenu.style.display = "block";
+    if (addPaddingBtn) addPaddingBtn.classList.add("active");
+  }
 }
 
 export function closePaddingMenu() {
+  const addPaddingBtn = document.getElementById("addPaddingBtn");
   paddingFloatingMenu.style.display = "none";
+  if (addPaddingBtn) addPaddingBtn.classList.remove("active");
+}
+
+/**
+ * Inicializa ouvintes específicos para os controles de padding
+ */
+export function initPaddingHandlers() {
+  const customSwatch = document.querySelector(".swatch-custom");
+  const paddingCustomColor = document.getElementById("paddingCustomColor");
+
+  if (customSwatch && paddingCustomColor) {
+    customSwatch.addEventListener("click", (e) => {
+      e.preventDefault();
+      paddingCustomColor.click();
+    });
+  }
 }

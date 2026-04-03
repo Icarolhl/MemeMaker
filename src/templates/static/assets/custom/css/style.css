@@ -1,202 +1,258 @@
-/* Truncate long file names in Bootstrap 4 custom-file-input */
-.custom-file-label {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+/* Midnight Minimalist - Dark Theme */
+:root {
+    --bg-main: #0f172a;
+    --bg-surface: #1e293b;
+    --bg-surface-lighter: #334155;
+    --accent-primary: #3b82f6;
+    --accent-hover: #2563eb;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --border-color: rgba(255, 255, 255, 0.1);
+    --border-radius-lg: 16px;
+    --border-radius-md: 12px;
 }
 
-/* Estilos para a Barra de Ações Rápidas no Canvas */
-.canvas-quick-actions {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    z-index: 1010; /* Garante que fique acima de tudo no canvas */
-    display: none;
-    flex-direction: row; /* Layout horizontal */
-    gap: 10px;
-    background: rgba(255, 255, 255, 0.85); /* Fundo translúcido moderno */
-    padding: 8px 15px;
-    border-radius: 50px;
+body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    transition: background-color 0.3s ease;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
+/* Navbar Minimalista */
+.navbar {
+    background-color: rgba(15, 23, 42, 0.8) !important;
     backdrop-filter: blur(10px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    transition: all 0.3s ease;
+    border-bottom: 1px solid var(--border-color);
 }
 
-/* Classe para mostrar os botões via JS */
-.canvas-quick-actions.show {
+.navbar-brand {
+    font-weight: 800;
+    color: var(--text-primary) !important;
+    letter-spacing: -0.5px;
+}
+
+/* Footer */
+.footer {
+    background-color: var(--bg-main) !important;
+    border-top: 1px solid var(--border-color);
+    color: var(--text-secondary);
+}
+
+/* Editor Main Box */
+.meme-editor-app-box {
+    background-color: var(--bg-surface) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--border-radius-lg);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+/* Card Tools */
+.card {
+    background-color: var(--bg-surface-lighter);
+    border: none;
+    border-radius: var(--border-radius-md);
+}
+
+.card-header {
+    background-color: transparent !important;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Toolbar Integrada (Fixa no topo, sem sobrepor) */
+.editor-toolbar-header {
+    background: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid var(--border-color);
+    padding: 10px 20px;
     display: flex;
-    animation: fadeInDown 0.3s ease-out;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 60px;
 }
 
-@keyframes fadeInDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.editor-toolbar-header.d-none {
+    display: none !important;
 }
 
-.quick-action-btn {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
+/* Área de Trabalho do Canvas */
+.preview-work-area {
+    background-color: #0a0f1d;
+    min-height: 500px;
+    overflow: auto;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: white;
-    color: #007bff;
-    border: 1px solid #dee2e6;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    padding: 0;
 }
 
-.quick-action-btn:hover {
-    background: #f8f9fa;
-    color: #0056b3;
-    transform: scale(1.1);
-    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
-}
-
-.quick-action-btn.active {
-    background: #007bff;
-    color: white;
-    border-color: #007bff;
-}
-
-/* Ajuste do container para evitar que a imagem cubra os botões */
-#meme-preview-area {
-    padding-top: 70px !important; /* Espaço reservado para os botões no topo */
+#canvas-wrapper {
     position: relative;
-    overflow: visible; /* Permite que os botões flutuem corretamente */
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    background-image: 
+        linear-gradient(45deg, #161b22 25%, transparent 25%),
+        linear-gradient(-45deg, #161b22 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #161b22 75%),
+        linear-gradient(-45deg, transparent 75%, #161b22 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+    /* Importante: dimensões serão controladas via JS */
 }
 
-/* Menu Flutuante de Padding (Popover Sutil) */
+.toolbar-btn {
+    background: var(--bg-surface-lighter);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.toolbar-btn:hover {
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
+}
+
+.toolbar-btn.active {
+    background: var(--accent-primary) !important;
+    border-color: var(--accent-primary) !important;
+    color: white !important;
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+}
+
+.toolbar-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+/* Ajuste no Popover para não ficar cortado */
 .padding-popover {
     position: absolute;
-    top: 50px;
+    top: 45px;
     right: 0;
-    width: 200px;
-    background: white;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    z-index: 1020;
-    border: 1px solid rgba(0,0,0,0.05);
-    animation: fadeInScale 0.2s ease-out;
+    width: 220px;
+    padding: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    z-index: 1000;
 }
 
-@keyframes fadeInScale {
-    from {
-        opacity: 0;
-        transform: scale(0.95) translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-}
-
-.padding-popover .btn-xs {
-    padding: 2px 5px;
-    font-size: 10px;
-}
-
-.padding-popover select.form-control-sm {
-    height: 28px;
-    padding: 2px 5px;
-}
-
-.padding-popover .close {
-    font-size: 1.2rem;
-    line-height: 1;
-}
-
-/* Color Swatches */
-.color-swatch {
-    width: 22px;
-    height: 22px;
+/* Seletor de Cor Minimalista */
+.color-circle-btn {
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
+    border: 2px solid white;
     cursor: pointer;
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+    margin: 0 5px;
+    background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
+}
+
+/* Esconder input de cor nativo */
+.color-wheel-hidden {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+
+/* Forms */
+.form-control {
+    background-color: var(--bg-main) !important;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary) !important;
+    border-radius: 8px;
+}
+
+.form-control:focus {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.custom-file-upload {
+    border: 2px dashed var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.custom-file-upload:hover {
+    border-color: var(--accent-primary);
+    background: rgba(59, 130, 246, 0.05);
+}
+
+/* Camadas de Texto */
+.text-layer-card {
+    background: var(--bg-surface-lighter);
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid transparent;
+}
+
+.text-layer-card:hover {
+    border-color: var(--accent-primary);
+}
+
+.sidebar-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-secondary);
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+/* Swatches */
+.color-swatch {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
     border: 2px solid transparent;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 0;
+    cursor: pointer;
+    transition: transform 0.2s;
 }
 
 .color-swatch:hover {
-    transform: scale(1.15);
+    transform: scale(1.1);
 }
 
 .color-swatch.active {
-    border-color: #007bff;
-    box-shadow: 0 0 0 1px white inset;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
 }
 
-.swatch-white { background-color: #ffffff; border: 1px solid #ddd; }
-.swatch-black { background-color: #000000; }
-.swatch-gray { background-color: #888888; }
+.swatch-white { background: #ffffff; }
+.swatch-black { background: #000000; border: 1px solid #333; }
+.swatch-gray { background: #888888; }
 .swatch-custom { 
-    background: conic-gradient(from 0deg, red, yellow, lime, aqua, blue, magenta, red);
-    border: 1px solid #ddd;
-}
-
-.swatch-custom.color-selected {
-    background: white; /* Será sobrescrito pelo JS */
-    border-color: #007bff;
-}
-
-.custom-color-container {
-    position: relative;
-    display: flex;
-    align-items: center;
+    background: var(--bg-surface-lighter); 
+    display: flex; 
+    align-items: center; 
     justify-content: center;
 }
 
-/* Ações de Desenho (Superior Esquerdo) */
-.canvas-drawing-actions {
-    position: absolute;
-    top: 10px;
-    left: 15px;
-    z-index: 1010;
-    display: none;
-    flex-direction: row;
-    gap: 10px;
-    animation: fadeInDown 0.3s ease-out;
+/* Text Controls Section */
+.text-control-item {
+    background-color: var(--bg-main) !important;
+    border: 1px solid var(--border-color) !important;
 }
 
-.draw-color-btn {
-    width: 38px;
-    height: 38px;
-    border-radius: 8px; /* Quadrado com cantos levemente arredondados */
-    border: 2px solid white;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-    background: conic-gradient(from 0deg, red, yellow, lime, aqua, blue, magenta, red);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    padding: 0;
-}
-
-.draw-color-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-.color-wheel-hidden {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    border: none;
-    padding: 0;
-    margin: 0;
-    cursor: pointer;
-    z-index: 2;
+.badge-primary {
+    background-color: var(--accent-primary);
 }
