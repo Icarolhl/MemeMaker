@@ -12,7 +12,7 @@ const imageUpload = document.getElementById("imageUpload");
 const memeCanvasElement = document.getElementById("meme-canvas");
 const canvasWrapper = document.getElementById("canvas-wrapper");
 const placeholderContent = document.getElementById("placeholder-content");
-const customFileLabel = document.querySelector(".custom-file-label");
+const fileNameDisplay = document.getElementById("fileName");
 
 // Botões
 const addTextBtn = document.getElementById("addTextBtn");
@@ -36,15 +36,13 @@ const paddingCustomColorInput = document.getElementById("paddingCustomColor");
  */
 function activateEditorUI() {
   if (placeholderContent) {
-    placeholderContent.classList.add("d-none");
-    placeholderContent.style.setProperty("display", "none", "important");
+    placeholderContent.style.display = "none";
   }
   if (canvasWrapper) {
-    canvasWrapper.style.display = "block";
-    canvasWrapper.classList.add("has-image");
+    canvasWrapper.style.display = "inline-block";
   }
-  const canvasQuickActions = document.getElementById("canvasQuickActions");
-  if (canvasQuickActions) canvasQuickActions.classList.add("show");
+  const editorToolbar = document.getElementById("editorToolbar");
+  if (editorToolbar) editorToolbar.classList.add("show");
 }
 
 // --- Listeners de Upload ---
@@ -60,7 +58,7 @@ if (imageUpload) {
       }
 
       clearAlerts();
-      if (customFileLabel) customFileLabel.textContent = file.name;
+      if (fileNameDisplay) fileNameDisplay.textContent = file.name;
 
       const reader = new FileReader();
       reader.onload = function (e) {

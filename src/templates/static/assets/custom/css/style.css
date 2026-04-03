@@ -1,202 +1,189 @@
-/* Truncate long file names in Bootstrap 4 custom-file-input */
-.custom-file-label {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+/* Midnight Minimalist - Refined UI */
+:root {
+    --bg-main: #0f172a;
+    --bg-surface: #1e293b;
+    --bg-surface-lighter: #334155;
+    --accent-primary: #3b82f6;
+    --accent-hover: #2563eb;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --border-color: rgba(255, 255, 255, 0.08);
+    --border-radius-pill: 50px;
+    --border-radius-lg: 20px;
 }
 
-/* Estilos para a Barra de Ações Rápidas no Canvas */
-.canvas-quick-actions {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    z-index: 1010; /* Garante que fique acima de tudo no canvas */
-    display: none;
-    flex-direction: row; /* Layout horizontal */
-    gap: 10px;
-    background: rgba(255, 255, 255, 0.85); /* Fundo translúcido moderno */
-    padding: 8px 15px;
-    border-radius: 50px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    transition: all 0.3s ease;
+body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
 }
 
-/* Classe para mostrar os botões via JS */
-.canvas-quick-actions.show {
+/* App Box Principal */
+.meme-editor-app-box {
+    background-color: var(--bg-surface) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+}
+
+/* Sidebar Direita (Compacta) */
+.sidebar-tools {
+    max-width: 320px;
+    border-left: 1px solid var(--border-color);
+    background: rgba(0,0,0,0.1);
+}
+
+/* Área de Preview */
+#meme-preview-container {
+    background-color: #0a0f1d;
+    position: relative;
     display: flex;
-    animation: fadeInDown 0.3s ease-out;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    min-height: 500px;
 }
 
-@keyframes fadeInDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+#canvas-wrapper {
+    position: relative;
+    display: inline-block;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    background-image: 
+        linear-gradient(45deg, #161b22 25%, transparent 25%),
+        linear-gradient(-45deg, #161b22 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #161b22 75%),
+        linear-gradient(-45deg, transparent 75%, #161b22 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
 }
 
-.quick-action-btn {
+/* Toolbar Flutuante (Modern Pill) */
+.editor-floating-toolbar {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    padding: 6px;
+    border-radius: var(--border-radius-pill);
+    display: none;
+    gap: 4px;
+    z-index: 100;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+}
+
+.editor-floating-toolbar.show {
+    display: flex;
+}
+
+.toolbar-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
     width: 38px;
     height: 38px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: white;
-    color: #007bff;
-    border: 1px solid #dee2e6;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    padding: 0;
+    transition: all 0.2s;
 }
 
-.quick-action-btn:hover {
-    background: #f8f9fa;
-    color: #0056b3;
-    transform: scale(1.1);
-    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+.toolbar-btn:hover {
+    background: var(--bg-surface-lighter);
+    color: var(--text-primary);
 }
 
-.quick-action-btn.active {
-    background: #007bff;
+.toolbar-btn.active {
+    background: var(--accent-primary);
     color: white;
-    border-color: #007bff;
 }
 
-/* Ajuste do container para evitar que a imagem cubra os botões */
-#meme-preview-area {
-    padding-top: 70px !important; /* Espaço reservado para os botões no topo */
-    position: relative;
-    overflow: visible; /* Permite que os botões flutuem corretamente */
+.toolbar-divider {
+    width: 1px;
+    height: 24px;
+    background: var(--border-color);
+    margin: 7px 4px;
 }
 
-/* Menu Flutuante de Padding (Popover Sutil) */
+/* Seletor de Cor Minimalista */
+.color-circle-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid white;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+    margin: 0 5px;
+}
+
+/* Popover de Padding Refinado */
 .padding-popover {
     position: absolute;
-    top: 50px;
-    right: 0;
-    width: 200px;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    z-index: 1020;
-    border: 1px solid rgba(0,0,0,0.05);
-    animation: fadeInScale 0.2s ease-out;
+    top: 55px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    width: 240px;
+    padding: 15px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.6);
 }
 
-@keyframes fadeInScale {
-    from {
-        opacity: 0;
-        transform: scale(0.95) translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-}
-
-.padding-popover .btn-xs {
-    padding: 2px 5px;
+/* Estilo dos Inputs na Sidebar */
+.sidebar-label {
     font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-secondary);
+    font-weight: 700;
+    margin-bottom: 8px;
 }
 
-.padding-popover select.form-control-sm {
-    height: 28px;
-    padding: 2px 5px;
-}
-
-.padding-popover .close {
-    font-size: 1.2rem;
-    line-height: 1;
-}
-
-/* Color Swatches */
-.color-swatch {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
+.custom-file-upload {
+    border: 2px dashed var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
     cursor: pointer;
-    border: 2px solid transparent;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 0;
+    transition: all 0.2s;
 }
 
-.color-swatch:hover {
-    transform: scale(1.15);
+.custom-file-upload:hover {
+    border-color: var(--accent-primary);
+    background: rgba(59, 130, 246, 0.05);
 }
 
-.color-swatch.active {
-    border-color: #007bff;
-    box-shadow: 0 0 0 1px white inset;
+/* Camadas de Texto */
+.text-layer-card {
+    background: var(--bg-surface-lighter);
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid transparent;
 }
 
-.swatch-white { background-color: #ffffff; border: 1px solid #ddd; }
-.swatch-black { background-color: #000000; }
-.swatch-gray { background-color: #888888; }
-.swatch-custom { 
-    background: conic-gradient(from 0deg, red, yellow, lime, aqua, blue, magenta, red);
-    border: 1px solid #ddd;
+.text-layer-card:hover {
+    border-color: var(--accent-primary);
 }
 
-.swatch-custom.color-selected {
-    background: white; /* Será sobrescrito pelo JS */
-    border-color: #007bff;
-}
-
-.custom-color-container {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Ações de Desenho (Superior Esquerdo) */
-.canvas-drawing-actions {
-    position: absolute;
-    top: 10px;
-    left: 15px;
-    z-index: 1010;
-    display: none;
-    flex-direction: row;
-    gap: 10px;
-    animation: fadeInDown 0.3s ease-out;
-}
-
-.draw-color-btn {
-    width: 38px;
-    height: 38px;
-    border-radius: 8px; /* Quadrado com cantos levemente arredondados */
-    border: 2px solid white;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-    background: conic-gradient(from 0deg, red, yellow, lime, aqua, blue, magenta, red);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    padding: 0;
-}
-
-.draw-color-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
+/* Esconder inputs nativos */
 .color-wheel-hidden {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
     opacity: 0;
-    border: none;
-    padding: 0;
-    margin: 0;
-    cursor: pointer;
-    z-index: 2;
+    width: 0;
+    height: 0;
+}
+
+/* Scrollbar Custom */
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--bg-surface-lighter);
+    border-radius: 10px;
 }
