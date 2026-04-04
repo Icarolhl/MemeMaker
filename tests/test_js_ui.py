@@ -103,9 +103,6 @@ def test_handle_text_addition_validation(
     """
     page.goto(f"{live_server.url}{reverse('home')}")
 
-    # Tenta adicionar texto sem imagem (O botão agora está escondido, mas testamos o aviso via JS se possível ou comportamento inicial)
-    # Como o botão agora fica escondido até o upload, vamos testar apenas a transição do alerta.
-
     # Faz upload válido
     img_path = tmp_path / "test.png"
     handle_create_dummy_image(img_path)
@@ -114,7 +111,7 @@ def test_handle_text_addition_validation(
     # Aguarda a toolbar aparecer
     page.wait_for_selector("#editorToolbar", state="visible")
 
-    # Clica no botão de adicionar texto (agora visível)
+    # Clica no botão de adicionar texto
     page.click("#addTextBtn")
 
     # Verifica se a seção de controles apareceu

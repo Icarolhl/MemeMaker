@@ -1,11 +1,25 @@
 /**
  * Ponto de Entrada Principal (Main)
  */
-import { initCanvas, resizeCanvasToImage, canvas, resetPaddingState } from './modules/canvas.js';
-import { addTextToCanvas, clearTextSidebar } from './modules/text-module.js';
-import { updatePadding, togglePaddingMenu, closePaddingMenu, initPaddingHandlers } from './modules/padding-module.js';
-import { toggleDrawingMode, initDrawingHandlers } from './modules/drawing-module.js';
-import { showAlert, clearAlerts } from './modules/utils.js';
+import {
+  initCanvas,
+  resizeCanvasToImage,
+  canvas,
+  resetPaddingState,
+} from "./modules/canvas.js";
+import { addTextToCanvas, clearTextSidebar } from "./modules/text-module.js";
+import {
+  updatePadding,
+  togglePaddingMenu,
+  closePaddingMenu,
+  initPaddingHandlers,
+  applyPaddingRects,
+} from "./modules/padding-module.js";
+import {
+  toggleDrawingMode,
+  initDrawingHandlers,
+} from "./modules/drawing-module.js";
+import { showAlert, clearAlerts } from "./modules/utils.js";
 
 // Elementos da Interface
 const imageUpload = document.getElementById("imageUpload");
@@ -53,7 +67,12 @@ if (imageUpload) {
   imageUpload.addEventListener("change", function (event) {
     const file = this.files[0];
     if (file) {
-      const validMimeTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+      const validMimeTypes = [
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/webp",
+      ];
       if (!validMimeTypes.includes(file.type)) {
         showAlert("Arquivo não suportado!", "danger");
         this.value = "";
@@ -99,11 +118,16 @@ if (addTextBtn) {
 
 // --- Listeners de Padding ---
 if (addPaddingBtn) addPaddingBtn.addEventListener("click", togglePaddingMenu);
-if (closePaddingMenuBtn) closePaddingMenuBtn.addEventListener("click", closePaddingMenu);
-if (paddingPositionSelect) paddingPositionSelect.addEventListener("change", updatePadding);
-if (paddingSizeSelect) paddingSizeSelect.addEventListener("change", updatePadding);
+if (closePaddingMenuBtn)
+  closePaddingMenuBtn.addEventListener("click", closePaddingMenu);
+if (paddingPositionSelect)
+  paddingPositionSelect.addEventListener("change", updatePadding);
+if (paddingSizeSelect)
+  paddingSizeSelect.addEventListener("change", updatePadding);
 if (paddingColorTypeRadios) {
-  paddingColorTypeRadios.forEach(radio => radio.addEventListener("change", updatePadding));
+  paddingColorTypeRadios.forEach((radio) =>
+    radio.addEventListener("change", updatePadding),
+  );
 }
 if (paddingCustomColorInput) {
   paddingCustomColorInput.addEventListener("input", () => {
@@ -130,8 +154,13 @@ initPaddingHandlers();
 if (rotateImgBtn) {
   rotateImgBtn.addEventListener("click", () => {
     if (!canvas || !canvas.backgroundImage) return;
-    canvas.backgroundImage.set("angle", (canvas.backgroundImage.angle + 90) % 360);
+    canvas.backgroundImage.set(
+      "angle",
+      (canvas.backgroundImage.angle + 90) % 360,
+    );
     resizeCanvasToImage();
+    // Re-aplica as margens físicas após o redimensionamento por rotação
+    applyPaddingRects();
   });
 }
 
@@ -146,11 +175,11 @@ if (addOverlayBtn) {
 }
 
 if (overlayUpload) {
-  overlayUpload.addEventListener("change", function(e) {
+  overlayUpload.addEventListener("change", function (e) {
     const file = this.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = function(f) {
+      reader.onload = function (f) {
         fabric.Image.fromURL(f.target.result, (img) => {
           img.scaleToWidth(canvas.width * 0.4);
           img.set({
@@ -160,7 +189,7 @@ if (overlayUpload) {
             originY: "center",
             cornerColor: "#28a745",
             cornerSize: 10,
-            transparentCorners: false
+            transparentCorners: false,
           });
           canvas.add(img);
           canvas.setActiveObject(img);
@@ -177,9 +206,11 @@ if (clearCanvasBtn) {
   clearCanvasBtn.addEventListener("click", () => {
     if (canvas) {
       // Remove apenas objetos que NÃO são margens
-      const objectsToRemove = canvas.getObjects().filter(obj => !obj.isPadding);
+      const objectsToRemove = canvas
+        .getObjects()
+        .filter((obj) => !obj.isPadding);
       canvas.remove(...objectsToRemove);
-      
+
       clearTextSidebar();
       toggleDrawingMode(false);
       canvas.renderAll();
