@@ -85,7 +85,7 @@ def test_text_controls_lifecycle_and_sync(
     textarea = page.locator("#text-boxes-container textarea")
     expect(textarea).to_have_count(1)
 
-    # Sincronização (Edição)
+    # Verifica sincronização na edição
     textarea.fill("EDITADO")
     expect(textarea).to_have_value("EDITADO")
 

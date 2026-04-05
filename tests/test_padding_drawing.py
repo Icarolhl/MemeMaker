@@ -76,7 +76,7 @@ def test_drawing_mode_color_selector(live_server: "LiveServer", page: Page) -> N
     expect(draw_btn).to_have_class(re.compile(r".*active.*"))
 
     page.evaluate("document.getElementById('drawColorPicker').value = '#00ff00'")
-    page.dispatch_event("#drawColorPicker", "input")
+    page.dispatch_event("#drawColorPicker", "input")  # type: ignore
 
     expect(page.locator("#drawColorBtn")).to_have_css(
         "background-color", "rgb(0, 255, 0)"
