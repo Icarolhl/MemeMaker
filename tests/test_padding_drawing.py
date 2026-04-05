@@ -144,7 +144,9 @@ def test_actual_drawing_interaction(live_server: "LiveServer", page: Page) -> No
 
 @pytest.mark.usefixtures("setup_meme_editor")
 @pytest.mark.django_db
-def test_rotation_reapplies_padding_rects(live_server: "LiveServer", page: Page) -> None:
+def test_rotation_reapplies_padding_rects(
+    live_server: "LiveServer", page: Page
+) -> None:
     """Verifica se as margens físicas são recriadas após rotação."""
     page.click("#addPaddingBtn")
     page.select_option("#paddingPosition", "both")

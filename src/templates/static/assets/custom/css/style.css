@@ -270,6 +270,45 @@ h1, h2, h3, h4, h5, h6 {
     background-color: var(--accent-primary);
 }
 
+/* Consolidated Info Box */
+.info-main-box {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+}
+
+.tool-icon-preview {
+    width: 42px;
+    height: 42px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-surface-lighter);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: var(--text-primary);
+    flex-shrink: 0;
+}
+
+.info-pill {
+    background: var(--bg-surface-lighter);
+    border: 1px solid var(--border-color);
+    padding: 10px 15px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+}
+
+.text-danger-soft { color: #f87171; }
+.bg-primary-soft { background-color: rgba(59, 130, 246, 0.1); }
+.bg-success-soft { background-color: rgba(34, 197, 94, 0.1); }
+.bg-warning-soft { background-color: rgba(234, 179, 8, 0.1); }
+
 /* Scrollbar Custom */
 ::-webkit-scrollbar {
     width: 6px;
