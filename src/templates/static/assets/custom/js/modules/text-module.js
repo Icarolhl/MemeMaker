@@ -18,7 +18,7 @@ export function addTextBoxControl(textObject) {
   }
 
   const controlWrapper = document.createElement("div");
-  controlWrapper.className = "text-control-item mb-3 p-3 border rounded bg-light";
+  controlWrapper.className = "text-control-item mb-3 p-3 border rounded";
   controlWrapper.setAttribute("data-id", id);
   controlWrapper.innerHTML = `
     <div class="d-flex justify-content-between align-items-center mb-2">

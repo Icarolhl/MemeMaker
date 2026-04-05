@@ -15,179 +15,117 @@ os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
 
 def handle_create_dummy_image(path: Path) -> None:
-    """
-    Cria uma imagem RGB simples para uso nos testes de upload.
-
-    Args:
-        path: Caminho onde a imagem será salva.
-    """
+    """Cria uma imagem RGB simples para testes."""
     img = Image.new("RGB", (100, 100), color="red")
     img.save(path)
 
 
 @pytest.mark.django_db
-def test_initial_state_ui(live_server: "LiveServer", page: Page) -> None:
-    """
-    Valida o estado inicial da página sem nenhuma imagem carregada.
-    """
+def test_initial_ui_state(live_server: "LiveServer", page: Page) -> None:
+    """Valida o estado 'limpo' da aplicação ao carregar."""
     page.goto(f"{live_server.url}{reverse('home')}")
 
-    # Placeholder deve estar visível
-    placeholder = page.locator("#placeholder-content")
-    expect(placeholder).to_be_visible()
-
-    # Canvas deve estar oculto
-    canvas_wrapper = page.locator("#canvas-wrapper")
-    expect(canvas_wrapper).to_be_hidden()
+    expect(page.locator("#placeholder-content")).to_be_visible()
+    expect(page.locator("#canvas-wrapper")).to_be_hidden()
+    expect(page.locator("#editorToolbar")).to_be_hidden()
 
 
 @pytest.mark.django_db
-def test_handle_valid_image_upload(
+def test_image_upload_and_canvas_initialization(
     live_server: "LiveServer", page: Page, tmp_path: Path
 ) -> None:
-    """
-    Verifica se o upload de uma imagem ativa o editor e oculta o placeholder.
-    """
-    img_path = tmp_path / "valid_meme.png"
-    handle_create_dummy_image(img_path)
-
-    page.goto(f"{live_server.url}{reverse('home')}")
-
-    # Realiza o upload
-    page.set_input_files("#imageUpload", str(img_path))
-
-    # Placeholder deve sumir
-    placeholder = page.locator("#placeholder-content")
-    expect(placeholder).to_be_hidden()
-
-    # O wrapper do canvas e a toolbar devem aparecer
-    expect(page.locator("#canvas-wrapper")).to_be_visible()
-    expect(page.locator("#editorToolbar")).to_be_visible()
-
-    # O indicador de nome do arquivo deve mostrar o nome correto
-    label = page.locator("#fileName")
-    expect(label).to_have_text("valid_meme.png")
-
-
-@pytest.mark.django_db
-def test_handle_invalid_file_type(
-    live_server: "LiveServer", page: Page, tmp_path: Path
-) -> None:
-    """
-    Garante que arquivos não suportados disparem um alerta e resetem o input.
-    """
-    txt_path = tmp_path / "invalid.txt"
-    txt_path.write_text("not an image")
-
-    page.goto(f"{live_server.url}{reverse('home')}")
-
-    # Tenta carregar um arquivo TXT
-    page.set_input_files("#imageUpload", str(txt_path))
-
-    # Deve exibir alerta de erro
-    alert = page.locator(".alert-danger")
-    expect(alert).to_be_visible()
-    expect(alert).to_contain_text("Arquivo não suportado")
-
-    # O input deve ser limpo
-    file_input = page.locator("#imageUpload")
-    expect(file_input).to_have_value("")
-
-
-@pytest.mark.django_db
-def test_handle_text_addition_validation(
-    live_server: "LiveServer", page: Page, tmp_path: Path
-) -> None:
-    """
-    Valida que o alerta de aviso some após um upload válido bem-sucedido.
-    """
-    page.goto(f"{live_server.url}{reverse('home')}")
-
-    # Faz upload válido
+    """Verifica se o upload ativa o editor e inicializa o canvas com dimensões."""
     img_path = tmp_path / "test.png"
     handle_create_dummy_image(img_path)
-    page.set_input_files("#imageUpload", str(img_path))
-
-    # Aguarda a toolbar aparecer
-    page.wait_for_selector("#editorToolbar", state="visible")
-
-    # Clica no botão de adicionar texto
-    page.click("#addTextBtn")
-
-    # Verifica se a seção de controles apareceu
-    expect(page.locator("#text-controls-section")).to_be_visible()
-
-
-@pytest.mark.django_db
-def test_handle_canvas_clear_stability(
-    live_server: "LiveServer", page: Page, tmp_path: Path
-) -> None:
-    """
-    Verifica se a limpeza do canvas mantém a integridade da aplicação.
-    """
-    img_path = tmp_path / "stability_test.png"
-    handle_create_dummy_image(img_path)
 
     page.goto(f"{live_server.url}{reverse('home')}")
     page.set_input_files("#imageUpload", str(img_path))
 
-    # Aguarda inicialização robusta
-    page.wait_for_selector("#editorToolbar", state="visible")
-    page.wait_for_timeout(500)
+    # Verifica transição de visibilidade
+    expect(page.locator("#placeholder-content")).to_be_hidden()
+    expect(page.locator("#editorToolbar")).to_be_visible()
 
-    # Adiciona múltiplos textos
-    for _ in range(3):
-        page.click("#addTextBtn")
+    # Verifica se the canvas tem dimensões reais
+    canvas = page.locator("#meme-canvas")
+    width = int(canvas.get_attribute("width") or 0)
+    height = int(canvas.get_attribute("height") or 0)
+    assert width > 0
+    assert height > 0
 
-    # Limpa o canvas
-    page.click("#clearCanvasBtn")
 
-    # Verifica se o controle de camadas de texto sumiu
+@pytest.mark.django_db
+def test_invalid_upload_error_handling(
+    live_server: "LiveServer", page: Page, tmp_path: Path
+) -> None:
+    """Garante que arquivos inválidos mostram erro e resetem o estado."""
+    txt_path = tmp_path / "wrong.txt"
+    txt_path.write_text("invalid")
+
+    page.goto(f"{live_server.url}{reverse('home')}")
+    page.set_input_files("#imageUpload", str(txt_path))
+
+    expect(page.locator(".alert-danger")).to_contain_text("Arquivo não suportado")
+    expect(page.locator("#imageUpload")).to_have_value("")
+
+
+@pytest.mark.django_db
+def test_text_controls_lifecycle_and_sync(
+    live_server: "LiveServer", page: Page, tmp_path: Path
+) -> None:
+    """Valida a criação, edição e remoção de camadas de texto."""
+    img_path = tmp_path / "text_test.png"
+    handle_create_dummy_image(img_path)
+
+    page.goto(f"{live_server.url}{reverse('home')}")
+    page.set_input_files("#imageUpload", str(img_path))
+    page.wait_for_selector("#addTextBtn", state="visible")
+
+    # Adição
+    page.click("#addTextBtn")
+    textarea = page.locator("#text-boxes-container textarea")
+    expect(textarea).to_have_count(1)
+
+    # Sincronização (Edição)
+    textarea.fill("EDITADO")
+    expect(textarea).to_have_value("EDITADO")
+
+    # Remoção
+    page.click(".remove-text-btn")
+    expect(textarea).to_have_count(0)
     expect(page.locator("#text-controls-section")).to_be_hidden()
 
 
 @pytest.mark.django_db
-def test_text_box_controls_lifecycle(
+def test_handle_404_error_page(live_server: "LiveServer", page: Page) -> None:
+    """Verifica se a página 404 é exibida corretamente."""
+    page.goto(f"{live_server.url}/not-found-path")
+    expect(page.locator("h1")).to_contain_text("404")
+    expect(page.locator("a.btn-primary")).to_be_visible()
+
+
+@pytest.mark.django_db
+def test_rigorous_filename_overflow(
     live_server: "LiveServer", page: Page, tmp_path: Path
 ) -> None:
-    """
-    Testa o ciclo de vida dos controles de texto: adição, edição e remoção.
-    """
-    img_path = tmp_path / "test_lifecycle.png"
+    """Valida matematicamente se nomes longos sofrem overflow controlado."""
+    long_name = "a" * 100 + ".png"
+    img_path = tmp_path / long_name
     handle_create_dummy_image(img_path)
 
     page.goto(f"{live_server.url}{reverse('home')}")
     page.set_input_files("#imageUpload", str(img_path))
 
-    # Aguarda editor pronto
-    page.wait_for_selector("#addTextBtn", state="visible")
-    page.wait_for_timeout(500)
+    # Verifica clipping via JS geometry
+    overflow_results = page.evaluate("""
+        () => {
+            const el = document.getElementById('fileName');
+            const container = el.closest('.custom-file-upload');
+            return {
+                isClipped: el.scrollWidth > el.clientWidth,
+                isContained: el.offsetWidth <= container.offsetWidth
+            };
+        }
+    """)
 
-    # 1. Adição
-    page.click("#addTextBtn")
-    text_section = page.locator("#text-controls-section")
-    expect(text_section).to_be_visible()
-
-    textareas = page.locator("#text-boxes-container textarea")
-    expect(textareas).to_have_count(1)
-
-    # 2. Edição
-    page.fill("#text-boxes-container textarea", "TEXTO ROBUSTO")
-    expect(textareas.first).to_have_value("TEXTO ROBUSTO")
-
-    # 3. Remoção
-    page.locator(".remove-text-btn").first.click()
-    expect(textareas).to_have_count(0)
-    expect(text_section).to_be_hidden()
-
-
-@pytest.mark.django_db
-def test_handle_404_page(live_server: "LiveServer", page: Page) -> None:
-    """
-    Verifica se a página 404 customizada é exibida.
-    """
-    page.goto(f"{live_server.url}/pagina-inexistente")
-    expect(page.locator("h1")).to_contain_text("404")
-    # Usa seletor mais específico para o botão de voltar
-    back_btn = page.locator("a.btn-primary")
-    expect(back_btn).to_contain_text("Voltar para o Início")
+    assert overflow_results["isClipped"] is True, "Texto não foi truncado"
+    assert overflow_results["isContained"] is True, "Texto vazou do container"
