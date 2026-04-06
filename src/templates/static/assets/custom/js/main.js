@@ -7,7 +7,11 @@ import {
   canvas,
   resetPaddingState,
 } from "./modules/canvas.js";
-import { addTextToCanvas, clearTextSidebar } from "./modules/text-module.js";
+import {
+  addTextToCanvas,
+  clearTextSidebar,
+  updateTextUI,
+} from "./modules/text-module.js";
 import {
   updatePadding,
   togglePaddingMenu,
@@ -86,6 +90,18 @@ if (imageUpload) {
       reader.onload = function (e) {
         activateEditorUI();
         const c = initCanvas(memeCanvasElement);
+
+        // Listeners globais de sincronização de texto
+        c.on("text:changed", (options) => {
+          updateTextUI(options.target);
+        });
+
+        c.on("object:modified", (options) => {
+          if (options.target && options.target.type === "i-text") {
+            updateTextUI(options.target);
+          }
+        });
+
         fabric.Image.fromURL(e.target.result, (img) => {
           c.clear();
           resetPaddingState();

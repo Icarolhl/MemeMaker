@@ -96,6 +96,53 @@ def test_text_controls_lifecycle_and_sync(
 
 
 @pytest.mark.django_db
+def test_text_sync_canvas_to_ui(
+    live_server: "LiveServer", page: Page, tmp_path: Path
+) -> None:
+    """Valida se a digitação direta no canvas atualiza a UI da sidebar."""
+    img_path = tmp_path / "sync_test.png"
+    handle_create_dummy_image(img_path)
+
+    page.goto(f"{live_server.url}{reverse('home')}")
+    page.set_input_files("#imageUpload", str(img_path))
+
+    # Adiciona texto e entra em modo de edição
+    page.click("#addTextBtn")
+    textarea = page.locator("#text-boxes-container textarea")
+
+    # Simula mudança de texto no canvas injetando um evento real do Fabric.
+    # Como não expomos 'canvas' na window, buscamos ele pelo contexto do Fabric
+    # se possível ou usamos o seletor para interagir. Uma alternativa segura é
+    # disparar o evento via JS.
+    page.evaluate("""
+        () => {
+            // Busca o objeto IText no canvas através da instância do Fabric.
+            const canvasEl = document.getElementById('meme-canvas');
+            // O Fabric anexa a instância ao elemento canvas no modo de
+            // compatibilidade ou podemos achar via getObjects.
+            // Como usamos módulos, precisamos que o teste acesse o objeto.
+            // Se não houver exposição, o teste de integração deve ser via teclado.
+            // Tentaremos uma abordagem de teclado mais agressiva.
+        }
+    """)
+
+    # Abordagem via JS para garantir a cobertura da LÓGICA de sincronização:
+    page.evaluate("""
+        () => {
+            const container = document.querySelector('.canvas-container');
+            const canvas = container ? container.fabricCanvas : null;
+            if (canvas) {
+                const textObj = canvas.getObjects('i-text')[0];
+                textObj.set('text', 'SYNC CANVAS');
+                canvas.fire('text:changed', { target: textObj });
+            }
+        }
+    """)
+
+    expect(textarea).to_have_value("SYNC CANVAS")
+
+
+@pytest.mark.django_db
 def test_handle_404_error_page(live_server: "LiveServer", page: Page) -> None:
     """Verifica se a página 404 é exibida corretamente."""
     page.goto(f"{live_server.url}/not-found-path")

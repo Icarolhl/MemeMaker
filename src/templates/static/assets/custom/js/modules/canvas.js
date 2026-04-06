@@ -24,6 +24,12 @@ export function initCanvas(memeCanvasElement) {
       imageSmoothingEnabled: true,
     });
 
+    // Permite acesso interno à instância via container (útil para integração)
+    const container = document.querySelector(".canvas-container");
+    if (container) {
+      container.fabricCanvas = canvas;
+    }
+
     // Configuração básica do pincel
     canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
     canvas.freeDrawingBrush.width = 5;

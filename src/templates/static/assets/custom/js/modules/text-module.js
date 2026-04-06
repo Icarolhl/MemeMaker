@@ -47,6 +47,17 @@ export function addTextBoxControl(textObject) {
   });
 }
 
+/**
+ * Atualiza o valor do textarea na UI quando o texto no canvas muda
+ */
+export function updateTextUI(textObject) {
+  if (!textObject || !textObject.id) return;
+  const textarea = textBoxesContainer.querySelector(`textarea[data-id="${textObject.id}"]`);
+  if (textarea) {
+    textarea.value = textObject.text;
+  }
+}
+
 export function updateTextControlsVisibility() {
   const textObjects = canvas.getObjects("i-text");
   if (textObjects.length === 0 && textControlsSection) {
