@@ -111,7 +111,7 @@
                 <!-- Sidebar de Controle (Direita - 4 colunas) -->
                 <div class="col-lg-4 sidebar-tools p-4 d-flex flex-column" style="border-left: 1px solid var(--border-color);">
                     <div class="mb-4">
-                        <label class="sidebar-label">1. Imagem Base</label>
+                        <label class="sidebar-label">Imagem Base</label>
                         <div class="custom-file-upload" onclick="document.getElementById('imageUpload').click()">
                             <i class="fas fa-cloud-upload-alt text-primary mb-2"></i>
                             <p class="small m-0 text-secondary" id="fileName">Selecionar Arquivo</p>
@@ -119,15 +119,15 @@
                         </div>
                     </div>
 
-                    <div id="text-controls-section" class="flex-grow-1 overflow-auto mb-4" style="display: none; max-height: 400px;">
-                        <label class="sidebar-label">2. Camadas de Texto</label>
-                        <div id="text-boxes-container"></div>
-                    </div>
-
-                    <div class="mt-auto pt-3 border-top border-secondary">
-                        <button type="button" class="btn btn-success btn-block py-3 font-weight-bold shadow" id="downloadMemeBtn">
+                    <div id="download-section" class="mb-4">
+                        <button type="button" class="btn btn-premium-action btn-block py-3 font-weight-bold shadow" id="downloadMemeBtn">
                             <i class="fas fa-download mr-2"></i>BAIXAR MEME
                         </button>
+                    </div>
+
+                    <div id="text-controls-section" class="flex-grow-1 overflow-auto mb-4" style="display: none; max-height: 400px;">
+                        <label class="sidebar-label">Camadas de Texto</label>
+                        <div id="text-boxes-container"></div>
                     </div>
                 </div>
             </div>

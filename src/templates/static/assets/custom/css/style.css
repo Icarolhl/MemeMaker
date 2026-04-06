@@ -317,3 +317,26 @@ h1, h2, h3, h4, h5, h6 {
     background: var(--bg-surface-lighter);
     border-radius: 10px;
 }
+
+/* Botão de Ação Premium */
+.btn-premium-action {
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-hover));
+    border: none;
+    color: white !important;
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 14px;
+}
+
+.btn-premium-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
+    background: linear-gradient(135deg, var(--accent-hover), var(--accent-primary));
+}
+
+.btn-premium-action:active {
+    transform: translateY(0);
+}
