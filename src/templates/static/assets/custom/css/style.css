@@ -211,21 +211,58 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Camadas de Texto */
 .text-control-item {
-    background-color: var(--bg-main) !important;
+    background-color: var(--bg-surface-lighter) !important;
     border: 1px solid var(--border-color) !important;
+    border-radius: var(--border-radius-md);
     overflow: hidden;
+    transition: all 0.2s ease;
 }
 
-.text-layer-card {
-    background: var(--bg-surface-lighter);
-    border-radius: 10px;
+.text-control-item:hover {
+    border-color: var(--accent-primary) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.text-layer-header {
+    background: rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.text-layer-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-remove-layer {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 12px;
+    cursor: pointer;
+    transition: color 0.2s;
+    padding: 0;
+    line-height: 1;
+}
+
+.btn-remove-layer:hover {
+    color: #f87171;
+}
+
+.text-control-item textarea.form-control {
+    background-color: transparent !important;
+    border: none !important;
     padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid transparent;
+    font-size: 14px;
+    resize: none;
+    color: var(--text-primary) !important;
+    box-shadow: none !important;
 }
 
-.text-layer-card:hover {
-    border-color: var(--accent-primary);
+.text-control-item textarea.form-control:focus {
+    background-color: rgba(255, 255, 255, 0.02) !important;
 }
 
 .sidebar-label {

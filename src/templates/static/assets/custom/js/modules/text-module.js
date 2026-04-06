@@ -17,23 +17,32 @@ export function addTextBoxControl(textObject) {
     textControlsSection.style.display = "block";
   }
 
+  // Define o número da camada baseado na quantidade de textos atuais
+  const textCount = canvas.getObjects("i-text").length;
+  const layerTitle = `Texto ${textCount}`;
+
   const controlWrapper = document.createElement("div");
-  controlWrapper.className = "text-control-item mb-3 p-3 border rounded";
+  controlWrapper.className = "text-control-item mb-3";
   controlWrapper.setAttribute("data-id", id);
   controlWrapper.innerHTML = `
-    <div class="d-flex justify-content-between align-items-center mb-2">
-      <span class="badge badge-primary">Texto</span>
-      <button type="button" class="btn btn-sm btn-link text-danger p-0 remove-text-btn" title="Remover Texto">
-        <i class="fas fa-times-circle"></i>
+    <div class="text-layer-header d-flex justify-content-between align-items-center p-2 px-3">
+      <div class="d-flex align-items-center">
+        <i class="fas fa-grip-vertical text-muted mr-2" style="cursor: grab; font-size: 12px;"></i>
+        <span class="text-layer-title">${layerTitle}</span>
+      </div>
+      <button type="button" class="btn-remove-layer" title="Remover Camada">
+        <i class="fas fa-times"></i>
       </button>
     </div>
-    <textarea class="form-control form-control-sm text-sync-input" data-id="${id}" rows="2" style="resize: none;">${textObject.text}</textarea>
+    <div class="p-2 pt-0">
+      <textarea class="form-control text-sync-input" data-id="${id}" rows="2" placeholder="Digite seu texto...">${textObject.text}</textarea>
+    </div>
   `;
 
   textBoxesContainer.appendChild(controlWrapper);
 
   const textarea = controlWrapper.querySelector(".text-sync-input");
-  const removeBtn = controlWrapper.querySelector(".remove-text-btn");
+  const removeBtn = controlWrapper.querySelector(".btn-remove-layer");
 
   textarea.addEventListener("input", (e) => {
     textObject.set("text", e.target.value);

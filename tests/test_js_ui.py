@@ -90,7 +90,7 @@ def test_text_controls_lifecycle_and_sync(
     expect(textarea).to_have_value("EDITADO")
 
     # Remoção
-    page.click(".remove-text-btn")
+    page.click(".btn-remove-layer")
     expect(textarea).to_have_count(0)
     expect(page.locator("#text-controls-section")).to_be_hidden()
 
@@ -140,6 +140,31 @@ def test_text_sync_canvas_to_ui(
     """)
 
     expect(textarea).to_have_value("SYNC CANVAS")
+
+
+@pytest.mark.django_db
+def test_text_layer_dynamic_numbering(
+    live_server: "LiveServer", page: Page, tmp_path: Path
+) -> None:
+    """Verifica se os títulos das camadas de texto são numerados dinamicamente."""
+    img_path = tmp_path / "numbering_test.png"
+    handle_create_dummy_image(img_path)
+
+    page.goto(f"{live_server.url}{reverse('home')}")
+    page.set_input_files("#imageUpload", str(img_path))
+
+    # Adiciona a primeira camada
+    page.click("#addTextBtn")
+    expect(page.locator(".text-layer-title").first).to_have_text("Texto 1")
+
+    # Adiciona a segunda camada
+    page.click("#addTextBtn")
+    expect(page.locator(".text-layer-title").nth(1)).to_have_text("Texto 2")
+
+    # Remove a primeira e adiciona uma nova (deve ser Texto 2 novamente pois restou 1)
+    page.locator(".btn-remove-layer").first.click()
+    page.click("#addTextBtn")
+    expect(page.locator(".text-layer-title").last).to_have_text("Texto 2")
 
 
 @pytest.mark.django_db
