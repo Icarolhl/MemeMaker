@@ -40,10 +40,10 @@ export function initKeyboardShortcuts() {
         break;
 
       case "ArrowLeft":
-        handleMove("left", e.shiftKey ? 10 : 1);
+        handleMove("left", e.shiftKey ? -10 : -1);
         break;
       case "ArrowRight":
-        handleMove("right", e.shiftKey ? 10 : 1);
+        handleMove("left", e.shiftKey ? 10 : 1);
         break;
       case "ArrowUp":
         handleMove("top", e.shiftKey ? -10 : -1);
