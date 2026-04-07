@@ -29,10 +29,11 @@ def setup_canvas_with_image(
 
 
 def dispatch_kb_event(
-    page: Page, key: str, ctrl: bool = False, shift: bool = False
+    page: Page, key: str, *, ctrl: bool = False, shift: bool = False
 ) -> None:
     """Dispara evento diretamente no window."""
-    page.evaluate(f"""
+    page.evaluate(
+        f"""
         window.dispatchEvent(new KeyboardEvent('keydown', {{
             key: '{key}',
             ctrlKey: {str(ctrl).lower()},
@@ -40,7 +41,8 @@ def dispatch_kb_event(
             bubbles: true,
             cancelable: true
         }}));
-    """)
+    """
+    )
 
 
 @pytest.mark.django_db
@@ -67,21 +69,27 @@ def test_keyboard_move_object(
 
     # Foco no canvas e seleção
     page.click("#meme-canvas", force=True)
-    page.evaluate("""
+    page.evaluate(
+        """
         () => {
-            const canvas = document.querySelector('.canvas-container').fabricCanvas;
+            const container = document.querySelector('.canvas-container');
+            const canvas = container.fabricCanvas;
             const obj = canvas.getObjects('i-text')[0];
             canvas.setActiveObject(obj);
             canvas.requestRenderAll();
         }
-    """)
+    """
+    )
 
-    initial_pos = page.evaluate("""
+    initial_pos = page.evaluate(
+        """
         () => {
-            const obj = document.querySelector('.canvas-container').fabricCanvas.getActiveObject();
+            const container = document.querySelector('.canvas-container');
+            const obj = container.fabricCanvas.getActiveObject();
             return { left: obj.left, top: obj.top };
         }
-    """)
+    """
+    )
 
     # Native press para movimento (mais confiável para setas em alguns browsers)
     page.keyboard.press("ArrowRight")
@@ -89,12 +97,15 @@ def test_keyboard_move_object(
     page.keyboard.press("ArrowDown")
     page.keyboard.up("Shift")
 
-    new_pos = page.evaluate("""
+    new_pos = page.evaluate(
+        """
         () => {
-            const obj = document.querySelector('.canvas-container').fabricCanvas.getObjects('i-text')[0];
+            const container = document.querySelector('.canvas-container');
+            const obj = container.fabricCanvas.getObjects('i-text')[0];
             return { left: obj.left, top: obj.top };
         }
-    """)
+    """
+    )
 
     assert new_pos["left"] == initial_pos["left"] + 1
     assert new_pos["top"] == initial_pos["top"] + 10
@@ -111,12 +122,15 @@ def test_keyboard_select_all(
 
     dispatch_kb_event(page, "a", ctrl=True)
 
-    selected_count = page.evaluate("""
+    selected_count = page.evaluate(
+        """
         () => {
-            const active = document.querySelector('.canvas-container').fabricCanvas.getActiveObject();
+            const container = document.querySelector('.canvas-container');
+            const active = container.fabricCanvas.getActiveObject();
             return active?.type === 'activeSelection' ? active.getObjects().length : 0;
         }
-    """)
+    """
+    )
     assert selected_count == 2
 
 
@@ -131,9 +145,14 @@ def test_keyboard_copy_paste(
     dispatch_kb_event(page, "c", ctrl=True)
     dispatch_kb_event(page, "v", ctrl=True)
 
-    count = page.evaluate("""
-        () => document.querySelector('.canvas-container').fabricCanvas.getObjects('i-text').length
-    """)
+    count = page.evaluate(
+        """
+        () => {
+            const container = document.querySelector('.canvas-container');
+            return container.fabricCanvas.getObjects('i-text').length;
+        }
+    """
+    )
     assert count == 2
 
 
@@ -147,9 +166,14 @@ def test_keyboard_escape_deselect(
 
     dispatch_kb_event(page, "Escape")
 
-    has_selection = page.evaluate("""
-        () => !!document.querySelector('.canvas-container').fabricCanvas.getActiveObject()
-    """)
+    has_selection = page.evaluate(
+        """
+        () => {
+            const container = document.querySelector('.canvas-container');
+            return !!container.fabricCanvas.getActiveObject();
+        }
+    """
+    )
     assert has_selection is False
 
 
@@ -164,7 +188,12 @@ def test_keyboard_ignore_shortcuts_in_input(
     page.locator("#text-boxes-container textarea").focus()
     dispatch_kb_event(page, "Backspace")
 
-    count = page.evaluate("""
-        () => document.querySelector('.canvas-container').fabricCanvas.getObjects('i-text').length
-    """)
+    count = page.evaluate(
+        """
+        () => {
+            const container = document.querySelector('.canvas-container');
+            return container.fabricCanvas.getObjects('i-text').length;
+        }
+    """
+    )
     assert count == 1
