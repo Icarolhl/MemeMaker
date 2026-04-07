@@ -23,6 +23,7 @@ import {
   toggleDrawingMode,
   initDrawingHandlers,
 } from "./modules/drawing-module.js";
+import { initKeyboardShortcuts } from "./modules/keyboard-module.js";
 import { showAlert, clearAlerts } from "./modules/utils.js";
 
 // Elementos da Interface
@@ -165,6 +166,7 @@ if (toggleDrawBtn) {
 }
 initDrawingHandlers();
 initPaddingHandlers();
+initKeyboardShortcuts();
 
 // --- Outras Ações ---
 if (rotateImgBtn) {
