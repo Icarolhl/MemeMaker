@@ -197,3 +197,41 @@ def test_keyboard_ignore_shortcuts_in_input(
     """
     )
     assert count == 1
+
+
+@pytest.mark.django_db
+def test_keyboard_arrows_no_scroll(
+    live_server: "LiveServer", page: Page, tmp_path: Path
+) -> None:
+    """Garante que as setas não rolam a página com objeto selecionado."""
+    setup_canvas_with_image(live_server, page, tmp_path)
+    page.click("#addTextBtn")
+
+    # Força scroll na página para teste
+    page.evaluate("document.body.style.height = '2000px'")
+    page.evaluate("window.scrollTo(0, 0)")
+
+    # Seleciona objeto
+    page.click("#meme-canvas", force=True)
+    page.evaluate(
+        """
+        () => {
+            const container = document.querySelector('.canvas-container');
+            const canvas = container.fabricCanvas;
+            const obj = canvas.getObjects('i-text')[0];
+            canvas.setActiveObject(obj);
+            canvas.requestRenderAll();
+        }
+    """
+    )
+
+    initial_scroll = page.evaluate("window.scrollY")
+    assert initial_scroll == 0
+
+    # Pressiona Seta para Baixo
+    page.keyboard.press("ArrowDown")
+
+    scroll_after = page.evaluate("window.scrollY")
+    assert scroll_after == 0, (
+        f"Página rolou para {scroll_after} mesmo com objeto selecionado"
+    )

@@ -40,16 +40,28 @@ export function initKeyboardShortcuts() {
         break;
 
       case "ArrowLeft":
-        handleMove("left", e.shiftKey ? -10 : -1);
+        if (canvas.getActiveObject()) {
+          e.preventDefault();
+          handleMove("left", e.shiftKey ? -10 : -1);
+        }
         break;
       case "ArrowRight":
-        handleMove("left", e.shiftKey ? 10 : 1);
+        if (canvas.getActiveObject()) {
+          e.preventDefault();
+          handleMove("left", e.shiftKey ? 10 : 1);
+        }
         break;
       case "ArrowUp":
-        handleMove("top", e.shiftKey ? -10 : -1);
+        if (canvas.getActiveObject()) {
+          e.preventDefault();
+          handleMove("top", e.shiftKey ? -10 : -1);
+        }
         break;
       case "ArrowDown":
-        handleMove("top", e.shiftKey ? 10 : 1);
+        if (canvas.getActiveObject()) {
+          e.preventDefault();
+          handleMove("top", e.shiftKey ? 10 : 1);
+        }
         break;
 
       case "a":
@@ -98,10 +110,12 @@ function handleDelete() {
       // Não remove a imagem de fundo nem as margens (padding)
       if (!obj.isPadding && obj !== canvas.backgroundImage) {
         canvas.remove(obj);
-        
+
         // Se for um texto, precisamos limpar a UI lateral
         if (obj.type === "i-text") {
-          const control = document.querySelector(`.text-control-item[data-id="${obj.id}"]`);
+          const control = document.querySelector(
+            `.text-control-item[data-id="${obj.id}"]`,
+          );
           if (control) control.remove();
         }
       }
