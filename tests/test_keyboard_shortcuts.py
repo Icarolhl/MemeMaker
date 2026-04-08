@@ -155,6 +155,12 @@ def test_keyboard_copy_paste(
     )
     assert count == 2
 
+    # A UI lateral também deve ter 2 controles
+    textarea_count = page.locator("#text-boxes-container textarea").count()
+    assert textarea_count == 2, (
+        f"Esperava 2 textareas na UI lateral, encontrou {textarea_count}"
+    )
+
 
 @pytest.mark.django_db
 def test_keyboard_escape_deselect(

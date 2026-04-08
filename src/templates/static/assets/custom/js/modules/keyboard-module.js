@@ -2,6 +2,7 @@
  * Módulo de Atalhos de Teclado
  */
 import { canvas } from "./canvas.js";
+import { addTextBoxControl } from "./text-module.js";
 
 /**
  * Inicializa os atalhos de teclado
@@ -142,7 +143,10 @@ let _clipboard = null;
  * Copia os objetos selecionados para o clipboard interno
  */
 function handleCopy() {
-  canvas.getActiveObject().clone((cloned) => {
+  const activeObject = canvas.getActiveObject();
+  if (!activeObject) return;
+
+  activeObject.clone((cloned) => {
     _clipboard = cloned;
   });
 }
@@ -166,10 +170,16 @@ function handlePaste() {
       clonedObj.canvas = canvas;
       clonedObj.forEachObject((obj) => {
         canvas.add(obj);
+        if (obj.type === "i-text") {
+          addTextBoxControl(obj);
+        }
       });
       clonedObj.setCoords();
     } else {
       canvas.add(clonedObj);
+      if (clonedObj.type === "i-text") {
+        addTextBoxControl(clonedObj);
+      }
     }
 
     _clipboard.top += 10;
