@@ -55,18 +55,12 @@ O MemeMaker pode ser acessado diretamente pelo navegador através do link:
    uv sync
    ```
 
-3. Configure o ambiente:
-   ```bash
-   cp .env-example .env
-   # Edite o .env conforme necessário
-   ```
-
-4. Execute as migrações:
+3. Execute as migrações:
    ```bash
    uv run python src/manage.py migrate
    ```
 
-5. Inicie o servidor de desenvolvimento:
+4. Inicie o servidor de desenvolvimento:
    ```bash
    uv run python src/manage.py runserver
    ```
