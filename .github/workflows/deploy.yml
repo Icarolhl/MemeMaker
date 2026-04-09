@@ -1,0 +1,71 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.13"
+
+      - name: Install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Create static site
+        run: |
+          mkdir dist
+          echo "DEBUG=True" > .env
+          echo "SECRET_KEY=static-deploy-key" >> .env
+          echo "ALLOWED_HOSTS=*" >> .env
+          
+          export DJANGO_STATIC_ROOT=$(pwd)/static_collected
+          
+          uv run python -c "
+          import os, django
+          from django.conf import settings
+          os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mememaker.settings')
+          django.setup()
+          from django.conf import settings
+          settings.STATIC_ROOT = os.environ['DJANGO_STATIC_ROOT']
+          from django.core.management import call_command
+          call_command('collectstatic', '--noinput')
+          "
+          
+          cp -r static_collected/* dist/
+          
+          uv run python -c "
+          import os, django
+          from django.conf import settings
+          from django.template.loader import render_to_string
+
+          os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mememaker.settings')
+          django.setup()
+          
+          html = render_to_string('base.html')
+          html = html.replace('/static/', './')
+          
+          with open('dist/index.html', 'w', encoding='utf-8') as f:
+              f.write(html)
+          "
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: dist
+          branch: gh-pages
