@@ -33,7 +33,12 @@
 
 ## 🚀 Como Executar
 
-### Pré-requisitos
+O MemeMaker pode ser acessado diretamente pelo navegador através do link:
+👉 **[https://icarolhl.github.io/MemeMaker/](https://icarolhl.github.io/MemeMaker/)**
+
+### Execução Local (Desenvolvimento)
+
+#### Pré-requisitos
 - Python 3.13+
 - [uv](https://github.com/astral-sh/uv) instalado
 
