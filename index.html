@@ -1,0 +1,335 @@
+
+<!DOCTYPE html>
+<html lang="pt-br" class="h-100">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MemeMaker</title>
+    
+<!-- Font Awesome (Local) -->
+<link rel="stylesheet" href="./assets/font-awesome/css/all.min.css">
+<!-- Fabric.js (Local) -->
+<script src="./assets/fabric/js/fabric.min.js"></script>
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="./assets/bootstrap/css/bootstrap.min.css">
+<!-- Custom CSS -->
+<link rel="stylesheet" href="./assets/custom/css/style.css">
+
+    
+</head>
+
+<body class="d-flex flex-column h-100">
+    
+<nav class="navbar navbar-expand-lg navbar-dark py-3">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <i class="fas fa-bolt text-primary mr-2"></i>
+            <span>MEMEMAKER</span>
+        </a>
+        <button class="navbar-toggler border-0" type="button" data-toggle="collapse" data-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link small" href="/">
+                        <i class="fas fa-home mr-1"></i> Início
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link small" href="#instructions">
+                        <i class="fas fa-info-circle mr-1"></i> Instruções
+                    </a>
+                </li>
+                <li class="nav-item ml-lg-3">
+                    <a class="nav-link small text-secondary" href="https://github.com/Icarolhl/MemeMaker" target="_blank">
+                        <i class="fab fa-github mr-1"></i> Github
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+    <main class="container mt-4 flex-shrink-0">
+        
+            
+<!-- Javascript do Editor (Modularizado) -->
+<script type="module" src="./assets/custom/js/main.js"></script>
+
+<!-- Container de Alertas -->
+<div id="alert-container" class="position-fixed" style="top: 20px; right: 20px; z-index: 9999; max-width: 300px;"></div>
+
+<!-- Box Principal da Aplicação -->
+<div class="container-fluid px-4 py-3">
+    <div class="meme-editor-app-box shadow-lg">
+        <form method="POST" enctype="multipart/form-data" id="memeForm" class="m-0">
+            
+            <div class="row no-gutters">
+                
+                <!-- Área de Preview (Esquerda - 8 colunas) -->
+                <div class="col-lg-8">
+                    <div id="meme-preview-container" class="d-flex flex-column">
+                        
+                        <!-- Toolbar Fixa no Topo do Container (Não sobrepõe a imagem) -->
+                        <div class="editor-toolbar-header d-none" id="editorToolbar">
+                            <div class="toolbar-group">
+                                <button type="button" class="toolbar-btn" id="rotateImgBtn" title="Girar">
+                                    <i class="fas fa-redo"></i>
+                                </button>
+                                <button type="button" class="toolbar-btn" id="addTextBtn" title="Adicionar Texto">
+                                    <i class="fas fa-font"></i>
+                                </button>
+                                <button type="button" class="toolbar-btn" id="addOverlayBtn" title="Sobreposição">
+                                    <i class="fas fa-plus-circle"></i>
+                                </button>
+                                <input type="file" id="overlayUpload" accept="image/*" style="display: none;">
+                            </div>
+
+                            <div class="toolbar-group">
+                                <div class="canvas-drawing-actions d-flex align-items-center" id="canvasDrawingActions" style="display: none;">
+                                    <div class="position-relative">
+                                        <button type="button" class="color-circle-btn" id="drawColorBtn" title="Cor"></button>
+                                        <input type="color" id="drawColorPicker" class="color-wheel-hidden" value="#ff0000">
+                                    </div>
+                                </div>
+                                <button type="button" class="toolbar-btn" id="toggleDrawBtn" title="Pincel">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </button>
+                                
+                                <div class="position-relative ml-2">
+                                    <button type="button" class="toolbar-btn" id="addPaddingBtn" title="Margens">
+                                        <i class="fas fa-arrows-alt-v"></i>
+                                    </button>
+                                    
+                                    <div id="padding-floating-menu" class="padding-popover" style="display: none;">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <span class="sidebar-label m-0">Margens</span>
+                                            <button type="button" class="close text-white small" id="closePaddingMenu">&times;</button>
+                                        </div>
+                                        <div class="mb-2">
+                                            <select class="form-control form-control-sm" id="paddingPosition">
+                                                <option value="none">Nenhuma</option>
+                                                <option value="top">Topo</option>
+                                                <option value="bottom">Base</option>
+                                                <option value="both" selected>Ambas</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <select class="form-control form-control-sm" id="paddingSize">
+                                                <option value="20">PP</option>
+                                                <option value="40">P</option>
+                                                <option value="80" selected>M</option>
+                                                <option value="120">G</option>
+                                                <option value="160">GG</option>
+                                            </select>
+                                        </div>
+                                        <div class="d-flex align-items-center justify-content-around bg-dark p-2 rounded">
+                                            <input type="radio" id="colorWhite" name="paddingColorType" value="white" checked style="display:none">
+                                            <label for="colorWhite" class="color-swatch swatch-white active"></label>
+                                            <input type="radio" id="colorBlack" name="paddingColorType" value="black" style="display:none">
+                                            <label for="colorBlack" class="color-swatch swatch-black"></label>
+                                            <input type="radio" id="colorCustom" name="paddingColorType" value="custom" style="display:none">
+                                            <div class="position-relative">
+                                                <label for="colorCustom" class="color-swatch swatch-custom">
+                                                    <i class="fas fa-eye-dropper" style="font-size: 8px;"></i>
+                                                </label>
+                                                <input type="color" id="paddingCustomColor" class="color-wheel-hidden" value="#ffffff">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="toolbar-group">
+                                <button type="button" class="toolbar-btn text-danger" id="clearCanvasBtn" title="Limpar Tudo">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Área de Trabalho -->
+                        <div class="preview-work-area flex-grow-1 d-flex align-items-center justify-content-center p-4">
+                            <div id="placeholder-content" class="text-center opacity-50">
+                                <i class="fas fa-bolt fa-3x text-primary mb-3"></i>
+                                <h4 class="font-weight-bold">MEMEMAKER</h4>
+                                <p class="small">Upload de imagem para começar</p>
+                            </div>
+
+                            <div id="canvas-wrapper" style="display: none;">
+                                <canvas id="meme-canvas"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar de Controle (Direita - 4 colunas) -->
+                <div class="col-lg-4 sidebar-tools p-4 d-flex flex-column" style="border-left: 1px solid var(--border-color);">
+                    <div class="mb-4">
+                        <label class="sidebar-label">Imagem Base</label>
+                        <div class="custom-file-upload" onclick="document.getElementById('imageUpload').click()">
+                            <i class="fas fa-cloud-upload-alt text-primary mb-2"></i>
+                            <p class="small m-0 text-secondary" id="fileName">Selecionar Arquivo</p>
+                            <input type="file" name="image" id="imageUpload" accept="image/*" style="display:none">
+                        </div>
+                    </div>
+
+                    <div id="download-section" class="mb-4">
+                        <button type="button" class="btn btn-premium-action btn-block py-3 font-weight-bold shadow" id="downloadMemeBtn">
+                            <i class="fas fa-download mr-2"></i>BAIXAR MEME
+                        </button>
+                    </div>
+
+                    <div id="text-controls-section" class="flex-grow-1 overflow-auto mb-4" style="display: none; max-height: 400px;">
+                        <label class="sidebar-label">Camadas de Texto</label>
+                        <div id="text-boxes-container"></div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Grande Box Informativa Consolidated -->
+<div id="instructions" class="row mt-5">
+    <div class="col-12">
+        <div class="info-main-box p-5 shadow-lg">
+            
+            <!-- 1. O que é -->
+            <section class="mb-5">
+                <h3 class="display-5 font-weight-bold text-primary mb-3">O que é o MemeMaker?</h3>
+                <p class="lead text-secondary">
+                    O MemeMaker é uma estação de trabalho criativa minimalista e de código aberto. 
+                    Diferente de editores pesados, ele foca na velocidade e na privacidade, 
+                    processando tudo diretamente no seu navegador. Crie memes profissionais, 
+                    anote imagens ou edite fotos sem marcas d'água e com zero anúncios.
+                </p>
+            </section>
+
+            <hr class="border-secondary opacity-25 my-5">
+
+            <!-- 2. Guia de Uso com Ícones -->
+            <section class="mb-5">
+                <h4 class="text-white mb-4"><i class="fas fa-tools mr-2 text-success"></i>Guia Rápido de Ferramentas</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="tool-guide-item d-flex mb-4">
+                            <div class="tool-icon-preview"><i class="fas fa-redo"></i></div>
+                            <div class="ml-3">
+                                <h6 class="text-white m-0">Girar Imagem</h6>
+                                <p class="small text-secondary m-0">Rotaciona a imagem base em 90° no sentido horário.</p>
+                            </div>
+                        </div>
+                        <div class="tool-guide-item d-flex mb-4">
+                            <div class="tool-icon-preview"><i class="fas fa-font"></i></div>
+                            <div class="ml-3">
+                                <h6 class="text-white m-0">Adicionar Texto</h6>
+                                <p class="small text-secondary m-0">Cria uma nova camada de texto editável sobre a imagem.</p>
+                            </div>
+                        </div>
+                        <div class="tool-guide-item d-flex mb-4">
+                            <div class="tool-icon-preview"><i class="fas fa-plus-circle"></i></div>
+                            <div class="ml-3">
+                                <h6 class="text-white m-0">Sobreposição (Overlay)</h6>
+                                <p class="small text-secondary m-0">Adiciona uma segunda imagem ou logo por cima do meme.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="tool-guide-item d-flex mb-4">
+                            <div class="tool-icon-preview"><i class="fas fa-pencil-alt"></i></div>
+                            <div class="ml-3">
+                                <h6 class="text-white m-0">Modo Pincel</h6>
+                                <p class="small text-secondary m-0">Habilita o desenho livre. Você pode escolher cores vibrantes na roda cromática.</p>
+                            </div>
+                        </div>
+                        <div class="tool-guide-item d-flex mb-4">
+                            <div class="tool-icon-preview"><i class="fas fa-arrows-alt-v"></i></div>
+                            <div class="ml-3">
+                                <h6 class="text-white m-0">Margens (Padding)</h6>
+                                <p class="small text-secondary m-0">Adiciona espaços extras no topo ou base, ideais para legendas clássicas.</p>
+                            </div>
+                        </div>
+                        <div class="tool-guide-item d-flex mb-4">
+                            <div class="tool-icon-preview text-danger border-danger"><i class="fas fa-trash-alt"></i></div>
+                            <div class="ml-3">
+                                <h6 class="text-danger m-0">Limpar Tudo</h6>
+                                <p class="small text-secondary m-0">Remove todos os textos e desenhos, preservando a imagem e margens.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr class="border-secondary opacity-25 my-5">
+
+            <!-- 3. Atalhos de Teclado -->
+            <section class="mb-5">
+                <h4 class="text-white mb-4"><i class="fas fa-keyboard mr-2 text-info"></i>Atalhos de Teclado</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="list-unstyled text-secondary small">
+                            <li class="mb-2"><kbd>Del</kbd> / <kbd>Backspace</kbd> - Remover objeto selecionado</li>
+                            <li class="mb-2"><kbd>Setas</kbd> - Mover objeto (1px)</li>
+                            <li class="mb-2"><kbd>Shift</kbd> + <kbd>Setas</kbd> - Mover objeto (10px)</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="list-unstyled text-secondary small">
+                            <li class="mb-2"><kbd>Ctrl</kbd> + <kbd>C</kbd> / <kbd>V</kbd> - Copiar e Colar objetos</li>
+                            <li class="mb-2"><kbd>Ctrl</kbd> + <kbd>A</kbd> - Selecionar tudo</li>
+                            <li class="mb-2"><kbd>Esc</kbd> - Deselecionar ou Sair de edição</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <hr class="border-secondary opacity-25 my-5">
+
+            <!-- 4. Finalidades -->
+            <section>
+                <h4 class="text-white mb-3">Posso utilizar para outras finalidades?</h4>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="info-pill mb-2"><i class="fas fa-check-circle mr-2 text-primary"></i>Anotações Visuais</div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="info-pill mb-2"><i class="fas fa-check-circle mr-2 text-primary"></i>Redimensionamento</div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="info-pill mb-2"><i class="fas fa-check-circle mr-2 text-primary"></i>Banners Simples</div>
+                    </div>
+                </div>
+                <p class="text-secondary small mt-3">
+                    O MemeMaker é versátil. Use-o para marcar pontos importantes em capturas de tela ou 
+                    para preparar imagens rápidas para redes sociais mantendo a proporção ideal.
+                </p>
+            </section>
+
+        </div>
+    </div>
+</div>
+
+</div>
+
+        
+    </main>
+
+    
+<footer class="footer mt-auto py-4">
+    <div class="container text-center">
+        <p class="mb-0 small text-secondary">
+            &copy; 2026 MemeMaker &bull; Minimalist Editor
+        </p>
+    </div>
+</footer>
+
+<!-- Bootstrap Dependencies -->
+<script src="./assets/bootstrap/js/jquery-3.2.1.slim.min.js"></script>
+<script src="./assets/bootstrap/js/popper.min.js"></script>
+<script src="./assets/bootstrap/js/bootstrap.min.js"></script>
+
+    
+</body>
+</html>
