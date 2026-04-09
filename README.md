@@ -80,6 +80,18 @@ Para manter a integridade do projeto, utilizamos um conjunto rigoroso de ferrame
 
 ---
 
+## 🔄 Fluxo de Deploy (CI/CD)
+
+Este projeto utiliza **GitHub Actions** para automatizar o processo de deploy no **GitHub Pages**:
+
+1.  **Desenvolvimento:** As novas funcionalidades são desenvolvidas e testadas na branch `development`.
+2.  **Aprovação:** Após a validação, a branch `development` é mesclada (`merge`) na branch `main`.
+3.  **Automação:** Cada `push` na branch `main` dispara o workflow `.github/workflows/deploy.yml`.
+4.  **Build Estático:** O workflow instala as dependências, utiliza o Django para renderizar o template em um `index.html` estático, coleta os assets e ajusta os caminhos dos arquivos.
+5.  **Publicação:** O resultado final é enviado para a branch `gh-pages`, que serve o site publicamente.
+
+---
+
 ## 🤝 Contribuição
 
 Contribuições são muito bem-vindas! Sinta-se à vontade para abrir issues ou enviar pull requests.
