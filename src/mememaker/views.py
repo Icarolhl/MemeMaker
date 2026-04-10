@@ -51,3 +51,7 @@ class HomeView(View):
                 "filename": str(image.name),
             }
         )
+
+
+def handler_404(request: HttpRequest, exception: Exception) -> HttpResponse:
+    return render(request, "404.html", status=404)

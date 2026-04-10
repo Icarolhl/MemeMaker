@@ -63,3 +63,20 @@ class TestHomeView:
         data = response.json()
         assert data["status"] == "success"
         assert data["filename"] == file_name
+
+
+@pytest.mark.django_db
+class TestErrorViews:
+    """
+    Testes para as views de erro do MemeMaker.
+    """
+
+    def test_handler_404(self, client: Client) -> None:
+        """
+        Testa se uma URL inexistente retorna status 404 e usa o template correto.
+        """
+        url = "/url-que-nao-existe/"
+        response = client.get(url)
+        assert response.status_code == 404
+        templates = [t.name for t in response.templates if t.name]
+        assert "404.html" in templates
